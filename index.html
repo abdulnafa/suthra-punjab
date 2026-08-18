@@ -9,8 +9,9 @@
     />
     <meta name="theme-color" content="#075b2a" />
     <title>Suthra Punjab Banner Maker</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="app.js" defer></script>
+    <!-- The version query prevents mobile browsers from mixing new HTML with stale CSS/JS. -->
+    <link rel="stylesheet" href="styles.css?v=20260818-3" />
+    <script src="app.js?v=20260818-3" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -113,9 +114,20 @@
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 multiple
+                style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap"
                 disabled
               />
-              <svg viewBox="0 0 24 24" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
                 <path d="M4 17v2h16v-2M12 4v11m-4-7 4-4 4 4" />
               </svg>
               <span>

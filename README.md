@@ -10,6 +10,7 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 - Mobile bulk selection that fills the six empty photo boxes in order
 - Mobile-first two-column photo layout with a safe-area-aware download bar
 - Live poster preview based on the supplied 535 × 725 reference layout
+- Reference-matched colors, unequal photo grid, typography and activity-specific vector icons
 - Sharp 1070 × 1450 JPG download
 - All processing happens locally in the browser; photos are never uploaded
 - No framework, build command, package install or server is required
@@ -51,3 +52,7 @@ The published site will normally be available at:
 ```text
 https://abdulnafa.github.io/suthra-punjab/
 ```
+
+## Font license
+
+The poster uses the bundled Roboto Condensed variable font. It is distributed under the SIL Open Font License; the license text is included at `assets/RobotoCondensed-OFL.txt`.

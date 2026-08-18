@@ -6,6 +6,12 @@ const UC_DATA = {
   angah: "UC Angah",
 };
 
+const UC_POSTER_DATA = {
+  khabeki: { top: "UC KHABEKI - NAUSHERA", lines: ["UC KHABEKI -", "NAUSHERA"] },
+  mardwal: { top: "UC MARDWAL", lines: ["UC MARDWAL"] },
+  angah: { top: "UC ANGAH", lines: ["UC ANGAH"] },
+};
+
 const ACTIVITY_DATA = {
   desilting: {
     label: "Desilting",
@@ -17,7 +23,7 @@ const ACTIVITY_DATA = {
       ["Safe Silt Removal", "Removed silt is collected carefully and transferred for proper disposal."],
       ["Dedicated Sanitation Team", "Our sanitation staff works hard for a cleaner, safer community."],
     ],
-    icons: ["drain", "water", "shield", "bin", "team"],
+    icons: ["drain-shovel", "water-flow", "shield-check", "silt-cart", "team-five"],
   },
   "door-to-door": {
     label: "Door to Door",
@@ -29,19 +35,19 @@ const ACTIVITY_DATA = {
       ["Proper Waste Transfer", "Collected waste is moved onwards for appropriate handling and disposal."],
       ["Dedicated Collection Team", "Our collection team serves residents with care and responsibility."],
     ],
-    icons: ["home", "route", "shield", "truck", "team"],
+    icons: ["house-bin", "route", "shield-check", "collection-truck", "team-five"],
   },
   "manual-sweeping": {
     label: "Manual Sweeping",
     title: ["MANUAL", "SWEEPING"],
     benefits: [
-      ["Clean Public Areas", "Manual sweeping is carried out in streets, markets and community spaces."],
-      ["Removing Dirt & Litter", "Workers remove dust, litter, plastic waste and scattered debris."],
-      ["Healthy & Safe Environment", "Regular sweeping supports a clean, hygienic and safe environment."],
-      ["Proper Waste Collection", "Waste collected during sweeping is gathered for proper disposal."],
-      ["Dedicated Sanitation Team", "Our sanitation staff works hard for a cleaner, better community."],
+      ["Clean Public Areas", "Manual sweeping is being carried out in markets, streets and community spots to maintain cleanliness."],
+      ["Removing Dirt & Litter", "Our workers remove dust, litter, plastic waste and scattered debris from public places."],
+      ["Healthy & Safe Environment", "Regular sweeping helps in preventing diseases and ensures a clean, hygienic and safe environment."],
+      ["Proper Waste Collection", "Waste collected during sweeping is gathered properly for further disposal."],
+      ["Dedicated Sanitation Team", "Our dedicated staff is working hard for a cleaner and better community."],
     ],
-    icons: ["broom", "worker", "shield", "bin", "team"],
+    icons: ["broom", "worker-sweeping", "shield-check", "waste-bin", "team-five"],
   },
   "heap-collection": {
     label: "Heap Collection",
@@ -53,7 +59,7 @@ const ACTIVITY_DATA = {
       ["Safe Disposal", "Collected material is transported onwards for appropriate disposal."],
       ["Dedicated Sanitation Team", "Our sanitation staff works hard for a cleaner, safer community."],
     ],
-    icons: ["heap", "sparkle", "truck", "bin", "team"],
+    icons: ["waste-heap", "clean-street", "heap-truck", "bin-check", "team-five"],
   },
 };
 
@@ -69,6 +75,23 @@ const SUPPORTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const LOGICAL_WIDTH = 535;
 const LOGICAL_HEIGHT = 725;
 const OUTPUT_SCALE = 2;
+const POSTER_FONT = '"Suthra Condensed"';
+const POSTER_COLORS = {
+  paper: "#f9faf4",
+  green: "#094813",
+  title: "#094813",
+  navy: "#0b273f",
+  lime: "#c7d298",
+  ink: "#111713",
+};
+const PHOTO_CELLS = [
+  { x: 211, y: 27, width: 172, height: 193, radius: 7 },
+  { x: 384, y: 27, width: 150, height: 193, radius: 7 },
+  { x: 211, y: 221, width: 172, height: 227, radius: 7 },
+  { x: 384, y: 221, width: 150, height: 227, radius: 7 },
+  { x: 211, y: 449, width: 172, height: 160, radius: 7 },
+  { x: 384, y: 449, width: 150, height: 160, radius: 7 },
+];
 
 const elements = {
   ucSelect: document.querySelector("#ucSelect"),
@@ -452,82 +475,71 @@ function renderBanner() {
 }
 
 function drawBackground() {
-  context.fillStyle = "#f8f8ed";
+  context.fillStyle = POSTER_COLORS.paper;
   context.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
 
-  context.fillStyle = "#e0edc9";
+  context.fillStyle = "#d9e1b8";
   context.beginPath();
-  context.moveTo(132, 0);
-  context.lineTo(186, 0);
-  context.lineTo(164, 38);
-  context.closePath();
-  context.fill();
-
-  context.fillStyle = "#c9dfad";
-  context.beginPath();
-  context.moveTo(161, 0);
-  context.lineTo(207, 0);
-  context.lineTo(178, 26);
+  context.moveTo(149, 0);
+  context.lineTo(229, 0);
+  context.lineTo(177, 37);
   context.closePath();
   context.fill();
 }
 
 function drawPhotoMosaic() {
-  const gridX = 210;
-  const gridY = 29;
-  const gridWidth = 325;
-  const gridHeight = 576;
-  const gap = 3;
-  const cellWidth = (gridWidth - gap) / 2;
-  const cellHeight = (gridHeight - gap * 2) / 3;
-
-  roundedRect(context, gridX, 2, gridWidth - 3, 24, 8);
-  context.fillStyle = "#07572a";
+  roundedRect(context, 239, 1, 296, 24, 12);
+  context.fillStyle = POSTER_COLORS.green;
   context.fill();
-  drawSmallLeaf(224, 14, 0.65, "#ffffff");
-  drawSmallLeaf(514, 14, -0.65, "#ffffff");
-  drawFittedText("CLEAN TODAY, HEALTHY TOMORROW", gridX + 34, 18.5, gridWidth - 68, 12, 8, 11, 800, "#ffffff", "center");
+  drawSmallLeaf(254, 15, 0.65, "#ffffff", 0.62);
+  drawSmallLeaf(260, 14, -0.75, "#ffffff", 0.38);
+  drawSmallLeaf(522, 15, -0.65, "#ffffff", 0.62);
+  drawSmallLeaf(516, 14, 0.75, "#ffffff", 0.38);
+  drawFittedText("CLEAN TODAY, HEALTHY TOMORROW", 268, 19, 239, 15, 10, 15, 850, "#ffffff", "center", POSTER_FONT);
 
   state.photos.forEach((photo, index) => {
-    const column = index % 2;
-    const row = Math.floor(index / 2);
-    const x = gridX + column * (cellWidth + gap);
-    const y = gridY + row * (cellHeight + gap);
+    const cell = PHOTO_CELLS[index];
+    const { x, y, width, height, radius } = cell;
+
+    // Clear the full rectangular window before clipping so no prior image can
+    // remain visible around anti-aliased rounded corners.
+    context.fillStyle = "#eef2e9";
+    context.fillRect(x, y, width, height);
 
     context.save();
-    roundedRect(context, x, y, cellWidth, cellHeight, 7);
+    roundedRect(context, x, y, width, height, radius);
     context.clip();
 
     if (photo?.image) {
-      drawImageSmart(photo.image, x, y, cellWidth, cellHeight);
+      drawImageSmart(photo.image, x, y, width, height);
     } else {
-      const gradient = context.createLinearGradient(x, y, x, y + cellHeight);
+      const gradient = context.createLinearGradient(x, y, x, y + height);
       gradient.addColorStop(0, "#dbe9d7");
       gradient.addColorStop(1, "#b9d2b5");
       context.fillStyle = gradient;
-      context.fillRect(x, y, cellWidth, cellHeight);
+      context.fillRect(x, y, width, height);
 
       context.strokeStyle = "rgba(7, 83, 40, 0.18)";
       context.lineWidth = 1;
-      for (let offset = -cellHeight; offset < cellWidth; offset += 17) {
+      for (let offset = -height; offset < width; offset += 17) {
         context.beginPath();
         context.moveTo(x + offset, y);
-        context.lineTo(x + offset + cellHeight, y + cellHeight);
+        context.lineTo(x + offset + height, y + height);
         context.stroke();
       }
 
       context.fillStyle = "rgba(255, 255, 255, 0.86)";
       context.beginPath();
-      context.arc(x + cellWidth / 2, y + cellHeight / 2 - 7, 24, 0, Math.PI * 2);
+      context.arc(x + width / 2, y + height / 2 - 7, 24, 0, Math.PI * 2);
       context.fill();
-      drawCameraIcon(x + cellWidth / 2, y + cellHeight / 2 - 7);
-      drawFittedText(`PHOTO ${index + 1}`, x + 10, y + cellHeight / 2 + 30, cellWidth - 20, 11, 8, 10, 800, "#42644b", "center");
+      drawCameraIcon(x + width / 2, y + height / 2 - 7);
+      drawFittedText(`PHOTO ${index + 1}`, x + 10, y + height / 2 + 30, width - 20, 11, 8, 10, 800, "#42644b", "center", POSTER_FONT);
     }
 
     context.restore();
     context.strokeStyle = "rgba(255,255,255,0.78)";
     context.lineWidth = 1;
-    roundedRect(context, x + 0.5, y + 0.5, cellWidth - 1, cellHeight - 1, 6.5);
+    roundedRect(context, x + 0.5, y + 0.5, width - 1, height - 1, radius - 0.5);
     context.stroke();
   });
 }
@@ -535,50 +547,66 @@ function drawPhotoMosaic() {
 function drawInformationPanel() {
   const activity = ACTIVITY_DATA[state.activity];
   const titleLines = activity?.title || ["SELECT", "ACTIVITY"];
-  const benefits = activity?.benefits || [
+  const benefits = (activity?.benefits || [
     ["Choose a UC", "Select one of the available Union Councils to begin."],
     ["Choose an Activity", "Select the sanitation activity for this banner."],
     ["Upload Six Photos", "Add six clear GPS-stamped activity photos."],
     ["Review the Banner", "Check every photo in the live preview."],
     ["Download & Share", "Save the completed high-resolution banner."],
-  ];
-  const icons = activity?.icons || ["location", "broom", "camera", "shield", "download"];
+  ]).map((benefit) => [...benefit]);
+  const icons = activity?.icons || ["location", "broom", "camera", "shield-check", "download"];
+
+  if (state.activity === "manual-sweeping" && activity) {
+    const place = UC_POSTER_DATA[state.uc]?.top.replace(/^UC\s+/i, "") || "the selected UC";
+    benefits[4][1] = `Our dedicated staff is working hard for a cleaner, greener and better ${titleCasePlace(place)}.`;
+  }
 
   drawLogo();
 
-  const titleTop = 91;
-  const lineHeight = titleLines.length > 1 ? 35 : 43;
-  const titleSize = titleLines.length > 1 ? 36 : 41;
+  const titleBaselines = titleLines.length > 1 ? [166, 209] : [187];
   titleLines.forEach((line, index) => {
-    drawFittedText(line, 13, titleTop + index * lineHeight + titleSize, 185, titleSize, 25, titleSize, 900, "#07572a", "left", "Arial Narrow");
+    drawFittedText(line, 18, titleBaselines[index], 178, 52, 28, 52, 900, POSTER_COLORS.title, "left", POSTER_FONT);
   });
 
-  const badgeY = titleLines.length > 1 ? 169 : 145;
-  roundedRect(context, 15, badgeY, 180, 26, 5);
-  context.fillStyle = "#123b53";
+  const badgeY = 216;
+  roundedRect(context, 18, badgeY, 178, 31, 4);
+  context.fillStyle = POSTER_COLORS.navy;
   context.fill();
-  drawFittedText("ACTIVITY", 22, badgeY + 20, 166, 20, 13, 18, 850, "#ffffff", "center");
+  drawFittedText("ACTIVITY", 25, badgeY + 25, 164, 29, 20, 29, 850, "#ffffff", "center", POSTER_FONT);
 
-  const ucY = badgeY + 33;
-  roundedRect(context, 15, ucY, 180, 24, 5);
-  context.fillStyle = "#11672f";
+  const ucY = 252;
+  roundedRect(context, 14, ucY, 185, 25, 5);
+  context.fillStyle = POSTER_COLORS.green;
   context.fill();
-  drawFittedText((UC_DATA[state.uc] || "SELECT UC").toUpperCase(), 21, ucY + 17, 168, 15, 10, 14, 850, "#ffffff", "center");
+  const posterUc = UC_POSTER_DATA[state.uc]?.top || "SELECT UC";
+  drawFittedText(posterUc, 20, ucY + 18, 173, 16.5, 9, 16.5, 850, "#ffffff", "center", POSTER_FONT);
 
-  drawFittedText("SUTHRA PUNJAB AGENCY", 15, ucY + 40, 180, 12, 8, 11, 850, "#17231c", "center");
-  drawFittedText("DISTRICT KHUSHAB", 15, ucY + 54, 180, 11, 8, 10, 800, "#17231c", "center");
+  drawFittedText("SUTHRA PUNJAB AGENCY", 15, 294, 184, 15, 10, 15, 850, POSTER_COLORS.ink, "center", POSTER_FONT);
+  drawFittedText("DISTRICT KHUSHAB", 15, 310, 184, 15, 10, 15, 850, POSTER_COLORS.ink, "center", POSTER_FONT);
 
-  const benefitStart = ucY + 70;
-  const availableHeight = 604 - benefitStart;
-  const benefitHeight = availableHeight / 5;
+  const benefitRows = [
+    { y: 320, centerY: 338, separatorY: 376 },
+    { y: 379, centerY: 396, separatorY: 434 },
+    { y: 438, centerY: 454, separatorY: 493 },
+    { y: 497, centerY: 511, separatorY: 551 },
+    { y: 555, centerY: 568, separatorY: null },
+  ];
   benefits.forEach(([heading, copy], index) => {
-    const y = benefitStart + index * benefitHeight;
-    drawBenefit(y, benefitHeight, heading, copy, icons[index]);
+    drawBenefit(benefitRows[index], heading, copy, icons[index]);
   });
+}
+
+function titleCasePlace(value) {
+  return value
+    .toLowerCase()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+    .replace(/\s+-\s+/g, " - ");
 }
 
 function drawLogo() {
   context.save();
+  context.translate(4, 5);
+  context.scale(0.88, 0.88);
   context.strokeStyle = "#061f12";
   context.lineWidth = 2.2;
   context.lineCap = "round";
@@ -591,90 +619,149 @@ function drawLogo() {
   drawSmallLeaf(22, 14, -0.55, "#1a8040", 0.95);
   context.restore();
 
-  drawFittedText("SUTHRA", 57, 28, 129, 18, 12, 17, 900, "#071b10", "left");
-  drawFittedText("PUNJAB", 57, 45, 129, 18, 12, 17, 900, "#071b10", "left");
-  drawFittedText("CLEAN PUNJAB", 15, 65, 180, 11, 8, 10, 760, "#1f2822", "left");
-  drawFittedText("GREEN PUNJAB", 15, 77, 180, 11, 8, 10, 760, "#1f2822", "left");
+  drawFittedText("SUTHRA", 59, 30, 125, 14.5, 11, 14.5, 900, "#071b10", "left", '"Arial Black"');
+  drawFittedText("PUNJAB", 59, 44, 125, 14.5, 11, 14.5, 900, "#071b10", "left", '"Arial Black"');
+  drawFittedText("CLEAN PUNJAB", 19, 66, 172, 11.5, 8, 11.5, 700, "#1f2822", "left", POSTER_FONT);
+  drawFittedText("GREEN PUNJAB", 19, 78, 172, 11.5, 8, 11.5, 700, "#1f2822", "left", POSTER_FONT);
   drawSmallLeaf(177, 66, -0.3, "#0b6a31", 0.9);
   drawSmallLeaf(187, 61, 0.65, "#07572a", 0.75);
 }
 
-function drawBenefit(y, height, heading, copy, icon) {
-  const centerY = y + Math.min(21, height * 0.36);
-  context.fillStyle = "#0a642f";
+function drawBenefit(row, heading, copy, icon) {
+  const { y, centerY, separatorY } = row;
+  context.fillStyle = POSTER_COLORS.green;
   context.beginPath();
-  context.arc(29, centerY, 17, 0, Math.PI * 2);
+  context.arc(33, centerY, 19, 0, Math.PI * 2);
   context.fill();
-  drawBenefitIcon(icon, 29, centerY);
+  drawBenefitIcon(icon, 33, centerY, 25);
 
-  drawFittedText(heading.toUpperCase(), 52, y + 13, 143, 10.5, 7.4, 9.6, 850, "#17231c", "left", "Arial Narrow");
-  drawWrappedText(copy, 52, y + 18, 143, 8.1, 9.2, 3, "#2f3832", 550);
+  drawFittedText(heading.toUpperCase(), 62, y + 13, 136, 11, 8, 11, 850, POSTER_COLORS.ink, "left", POSTER_FONT);
+  drawWrappedText(copy, 62, y + 17, 136, 8.5, 9.4, 4, "#202720", 520, POSTER_FONT);
 
-  if (y + height < 604) {
-    context.strokeStyle = "#9da7a0";
-    context.lineWidth = 0.65;
+  if (separatorY) {
+    context.strokeStyle = "#151b16";
+    context.lineWidth = 1;
     context.beginPath();
-    context.moveTo(52, y + height - 2);
-    context.lineTo(196, y + height - 2);
+    context.moveTo(62, separatorY);
+    context.lineTo(198, separatorY);
     context.stroke();
   }
 }
 
 function drawBottomSummary() {
-  const y = 610;
-  const h = 73;
-  const ucLabel = (UC_DATA[state.uc] || "SELECT UC").toUpperCase();
+  const y = 609;
+  const h = 72;
+  const ucLines = UC_POSTER_DATA[state.uc]?.lines || ["SELECT UC"];
   const activityLabel = (ACTIVITY_DATA[state.activity]?.label || "SELECT ACTIVITY").toUpperCase();
 
-  roundedRect(context, 7, y, 205, h, 7);
-  context.fillStyle = "#f7f8ee";
+  roundedRect(context, 9, y, 201, h, 7);
+  context.fillStyle = "#d5dbb7";
   context.fill();
-  context.strokeStyle = "#183326";
-  context.lineWidth = 1.5;
+  context.strokeStyle = "#101a12";
+  context.lineWidth = 1.7;
   context.stroke();
 
-  context.fillStyle = "#09642f";
-  roundedRect(context, 10, y + 3, 55, h - 6, 5);
+  context.fillStyle = POSTER_COLORS.green;
+  roundedRect(context, 14, y + 4, 51, h - 8, 5);
   context.fill();
-  drawLocationPin(37.5, y + 35);
-  drawWrappedCenteredText(ucLabel, 72, y + 24, 132, 20, 21, 2, "#07572a", 900, "Arial Narrow");
+  drawLocationPin(38.5, y + 34);
+  if (ucLines.length > 1) {
+    drawFittedText(ucLines[0], 70, y + 29, 134, 21, 13, 20, 900, POSTER_COLORS.title, "center", POSTER_FONT);
+    drawFittedText(ucLines[1], 70, y + 54, 134, 23, 14, 22, 900, POSTER_COLORS.title, "center", POSTER_FONT);
+  } else {
+    drawFittedText(ucLines[0], 70, y + 43, 134, 23, 14, 22, 900, POSTER_COLORS.title, "center", POSTER_FONT);
+  }
 
-  roundedRect(context, 216, y, 155, h, 7);
-  context.fillStyle = "#07572a";
+  roundedRect(context, 217, y, 313, h, 7);
+  context.fillStyle = "#f2f0e3";
   context.fill();
-  context.strokeStyle = "#193a25";
-  context.stroke();
-  drawFittedText("ACTIVITY", 225, y + 20, 137, 15, 10, 13, 850, "#e7df72", "center");
-  drawWrappedCenteredText(activityLabel, 225, y + 41, 137, 14.5, 15.5, 2, "#ffffff", 850, "Arial Narrow");
 
-  roundedRect(context, 375, y, 153, h, 7);
-  context.fillStyle = "#f7f8ee";
+  roundedRect(context, 220, y + 4, 151, h - 8, 4);
+  context.fillStyle = POSTER_COLORS.green;
   context.fill();
-  context.strokeStyle = "#183326";
+
+  context.strokeStyle = "#101a12";
+  context.lineWidth = 1.7;
+  roundedRect(context, 217, y, 313, h, 7);
   context.stroke();
-  const outcomes = ["Clean Streets", "Healthy Community", "Better Punjab"];
-  outcomes.forEach((outcome, index) => {
-    const lineY = y + 16 + index * 19;
-    context.fillStyle = "#0a642f";
-    context.beginPath();
-    context.arc(390, lineY - 2.5, 7.5, 0, Math.PI * 2);
-    context.fill();
-    context.fillStyle = "#ffffff";
-    context.beginPath();
-    context.arc(390, lineY - 2.5, 2.3, 0, Math.PI * 2);
-    context.fill();
-    drawFittedText(outcome, 402, lineY + 1, 118, 10.5, 7.2, 9.6, 750, "#17231c", "left");
+
+  context.beginPath();
+  context.moveTo(372, y + 1);
+  context.lineTo(372, y + h - 1);
+  context.stroke();
+
+  drawFittedText("ACTIVITY", 258, y + 20, 105, 15.5, 10, 14, 850, "#dce36c", "center", POSTER_FONT);
+  drawActivitySummaryIcon(state.activity, 240, y + 43, 27);
+  drawWrappedCenteredText(activityLabel, 258, y + 42, 105, 15, 15.5, 2, "#ffffff", 850, POSTER_FONT);
+
+  const outcomes = [
+    ["Clean Streets", "leaf-broom"],
+    ["Healthy Community", "community"],
+    ["Better Punjab", "shield-check"],
+  ];
+  outcomes.forEach(([outcome, icon], index) => {
+    const iconY = [624, 646, 667][index];
+    drawOutcomeIcon(icon, 392, iconY, 10);
+    drawFittedText(outcome, 414, iconY + 4, 108, 10.5, 7.2, 10.5, 700, POSTER_COLORS.ink, "left", POSTER_FONT);
   });
 }
 
 function drawFooter() {
-  context.fillStyle = "#07572a";
-  context.fillRect(0, 689, LOGICAL_WIDTH, 25);
-  drawFittedText("SUTHRA PUNJAB AGENCY, DISTRICT KHUSHAB", 20, 707, 495, 15, 10, 14, 850, "#ffffff", "center");
+  context.fillStyle = POSTER_COLORS.green;
+  context.fillRect(0, 687, LOGICAL_WIDTH, 25);
+  drawFittedText("SUTHRA PUNJAB AGENCY, DISTRICT KHUSHAB", 20, 707, 495, 20, 13, 20, 850, "#ffffff", "center", POSTER_FONT);
+  drawFooterFoliage();
 
-  context.fillStyle = "#d8e7b9";
-  context.fillRect(0, 714, LOGICAL_WIDTH, 11);
-  drawFittedText("Let's Keep Our Environment Clean & Green", 25, 723, 485, 8.7, 6.5, 8, 700, "#183626", "center");
+  context.fillStyle = POSTER_COLORS.lime;
+  context.fillRect(0, 712, LOGICAL_WIDTH, 13);
+
+  context.fillStyle = "#183626";
+  context.font = 'italic 11px Georgia, "Times New Roman", serif';
+  context.textAlign = "center";
+  context.textBaseline = "alphabetic";
+  context.fillText("Let's Keep Our Environment Clean & Green", LOGICAL_WIDTH / 2, 723, 285);
+  drawTaglineOrnament(122, 718, -1);
+  drawTaglineOrnament(413, 718, 1);
+}
+
+function drawFooterFoliage() {
+  context.save();
+  context.translate(505, 700);
+  context.strokeStyle = "#b9c88b";
+  context.fillStyle = "#b9c88b";
+  context.lineWidth = 1.2;
+  context.beginPath();
+  context.moveTo(-13, 10);
+  context.quadraticCurveTo(-5, 1, 8, -10);
+  context.stroke();
+  [[-8, 5, -0.8], [-2, 0, 0.75], [3, -5, -0.65]].forEach(([x, y, rotation]) => {
+    context.save();
+    context.translate(x, y);
+    context.rotate(rotation);
+    context.beginPath();
+    context.ellipse(0, 0, 5, 2.5, 0, 0, Math.PI * 2);
+    context.fill();
+    context.restore();
+  });
+  context.restore();
+}
+
+function drawTaglineOrnament(x, y, direction) {
+  context.save();
+  context.translate(x, y);
+  context.scale(direction, 1);
+  context.strokeStyle = POSTER_COLORS.green;
+  context.fillStyle = POSTER_COLORS.green;
+  context.lineWidth = 0.9;
+  context.beginPath();
+  context.moveTo(0, 4);
+  context.quadraticCurveTo(7, -1, 14, -3);
+  context.stroke();
+  context.beginPath();
+  context.ellipse(6, 0, 4, 1.8, -0.55, 0, Math.PI * 2);
+  context.ellipse(11, -2.5, 3.5, 1.6, 0.45, 0, Math.PI * 2);
+  context.fill();
+  context.restore();
 }
 
 function drawImageCoverBottom(image, x, y, width, height) {
@@ -704,20 +791,14 @@ function drawImageSmart(image, x, y, width, height) {
   const sourceAspect = sourceWidth / sourceHeight;
   const targetAspect = width / height;
 
-  // Very tall GPS-camera photos lose most of their scene with a normal crop.
-  // Keep the whole photo visible and use a softly blurred copy to fill the sides.
+  // Keep every frame full-bleed like the reference. For an unusually tall phone
+  // photo, cap the top crop at 25% so the worker and bottom GPS card both remain
+  // visible; the small remaining aspect difference is fitted into the frame.
   if (sourceAspect < targetAspect * 0.78) {
-    context.save();
-    context.filter = "blur(5px) brightness(0.58)";
-    drawImageCoverBottom(image, x - 6, y - 6, width + 12, height + 12);
-    context.restore();
-
-    const scale = Math.min(width / sourceWidth, height / sourceHeight);
-    const fittedWidth = sourceWidth * scale;
-    const fittedHeight = sourceHeight * scale;
-    const fittedX = x + (width - fittedWidth) / 2;
-    const fittedY = y + height - fittedHeight;
-    context.drawImage(image, fittedX, fittedY, fittedWidth, fittedHeight);
+    const idealCropHeight = sourceWidth / targetAspect;
+    const cropHeight = Math.min(sourceHeight, Math.max(idealCropHeight, sourceHeight * 0.75));
+    const sourceY = sourceHeight - cropHeight;
+    context.drawImage(image, 0, sourceY, sourceWidth, cropHeight, x, y, width, height);
     return;
   }
 
@@ -735,7 +816,7 @@ function drawFittedText(
   weight,
   color,
   align = "left",
-  family = "Arial",
+  family = POSTER_FONT,
 ) {
   let size = Math.min(preferredSize, maximumSize);
   context.textAlign = align;
@@ -753,8 +834,8 @@ function drawFittedText(
   return size;
 }
 
-function drawWrappedText(text, x, y, maxWidth, fontSize, lineHeight, maxLines, color, weight = 500) {
-  context.font = `${weight} ${fontSize}px Arial, sans-serif`;
+function drawWrappedText(text, x, y, maxWidth, fontSize, lineHeight, maxLines, color, weight = 500, family = POSTER_FONT) {
+  context.font = `${weight} ${fontSize}px ${family}, Arial, sans-serif`;
   context.textAlign = "left";
   context.textBaseline = "top";
   context.fillStyle = color;
@@ -866,144 +947,375 @@ function drawLocationPin(x, y) {
   context.bezierCurveTo(0, 25, -13, 10, -13, 0);
   context.closePath();
   context.fill();
-  context.fillStyle = "#09642f";
+  context.fillStyle = POSTER_COLORS.green;
   context.beginPath();
   context.arc(0, 0, 5, 0, Math.PI * 2);
   context.fill();
   context.restore();
 }
 
-function drawBenefitIcon(type, x, y) {
+function drawBenefitIcon(type, x, y, size = 24) {
   context.save();
   context.translate(x, y);
+  context.scale(size / 24, size / 24);
   context.strokeStyle = "#ffffff";
   context.fillStyle = "#ffffff";
-  context.lineWidth = 1.7;
+  context.lineWidth = 1.8;
   context.lineCap = "round";
   context.lineJoin = "round";
 
-  if (["shield"].includes(type)) {
-    context.beginPath();
-    context.moveTo(0, -10);
-    context.lineTo(8, -7);
-    context.lineTo(7, 2);
-    context.quadraticCurveTo(5, 8, 0, 11);
-    context.quadraticCurveTo(-5, 8, -7, 2);
-    context.lineTo(-8, -7);
-    context.closePath();
-    context.stroke();
-    context.beginPath();
-    context.moveTo(-4, 0);
-    context.lineTo(-1, 3);
-    context.lineTo(5, -4);
-    context.stroke();
-  } else if (["bin", "heap"].includes(type)) {
-    context.strokeRect(-6, -5, 12, 14);
-    context.beginPath();
-    context.moveTo(-8, -8);
-    context.lineTo(8, -8);
-    context.moveTo(-3, -11);
-    context.lineTo(3, -11);
-    context.moveTo(-2, -2);
-    context.lineTo(-2, 6);
-    context.moveTo(2, -2);
-    context.lineTo(2, 6);
-    context.stroke();
-  } else if (["team", "worker"].includes(type)) {
-    context.beginPath();
-    context.arc(-5, -4, 3.5, 0, Math.PI * 2);
-    context.arc(5, -4, 3.5, 0, Math.PI * 2);
-    context.stroke();
-    context.beginPath();
-    context.arc(0, -7, 4, 0, Math.PI * 2);
-    context.stroke();
-    context.beginPath();
-    context.arc(0, 6, 9, Math.PI, 0);
-    context.stroke();
-  } else if (["truck"].includes(type)) {
-    context.strokeRect(-10, -7, 12, 11);
-    context.beginPath();
-    context.moveTo(2, -3);
-    context.lineTo(7, -3);
-    context.lineTo(10, 1);
-    context.lineTo(10, 4);
-    context.lineTo(2, 4);
-    context.stroke();
-    context.beginPath();
-    context.arc(-5, 6, 2.5, 0, Math.PI * 2);
-    context.arc(7, 6, 2.5, 0, Math.PI * 2);
-    context.stroke();
-  } else if (["home"].includes(type)) {
-    context.beginPath();
-    context.moveTo(-10, -1);
-    context.lineTo(0, -10);
-    context.lineTo(10, -1);
-    context.moveTo(-7, -3);
-    context.lineTo(-7, 9);
-    context.lineTo(7, 9);
-    context.lineTo(7, -3);
-    context.moveTo(-2, 9);
-    context.lineTo(-2, 2);
-    context.lineTo(3, 2);
-    context.lineTo(3, 9);
-    context.stroke();
-  } else if (["water", "drain"].includes(type)) {
-    context.beginPath();
-    context.moveTo(0, -11);
-    context.bezierCurveTo(-7, -3, -8, 1, -8, 4);
-    context.arc(0, 4, 8, Math.PI, 0, true);
-    context.bezierCurveTo(8, 1, 7, -3, 0, -11);
-    context.stroke();
-  } else if (["route"].includes(type)) {
-    context.beginPath();
-    context.arc(-7, 7, 2.5, 0, Math.PI * 2);
-    context.arc(7, -7, 2.5, 0, Math.PI * 2);
-    context.moveTo(-5, 6);
-    context.bezierCurveTo(5, 5, -4, -5, 5, -6);
-    context.stroke();
-  } else if (["camera"].includes(type)) {
-    roundedRect(context, -10, -7, 20, 15, 2);
-    context.stroke();
-    context.beginPath();
-    context.arc(0, 0, 4, 0, Math.PI * 2);
-    context.stroke();
-  } else if (["download"].includes(type)) {
-    context.beginPath();
-    context.moveTo(0, -10);
-    context.lineTo(0, 4);
-    context.moveTo(-5, 0);
-    context.lineTo(0, 5);
-    context.lineTo(5, 0);
-    context.moveTo(-8, 9);
-    context.lineTo(8, 9);
-    context.stroke();
-  } else if (["sparkle"].includes(type)) {
-    context.beginPath();
-    context.moveTo(0, -11);
-    context.lineTo(2, -3);
-    context.lineTo(9, 0);
-    context.lineTo(2, 2);
-    context.lineTo(0, 10);
-    context.lineTo(-2, 2);
-    context.lineTo(-9, 0);
-    context.lineTo(-2, -3);
-    context.closePath();
-    context.stroke();
-  } else {
-    context.beginPath();
-    context.moveTo(-8, -8);
-    context.lineTo(7, 7);
-    context.moveTo(3, -10);
-    context.lineTo(-5, 10);
-    context.stroke();
+  switch (type) {
+    case "broom":
+    case "clean-street": {
+      context.beginPath();
+      context.moveTo(-7, -10);
+      context.lineTo(2, 3);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(1, 1);
+      context.lineTo(9, 7);
+      context.quadraticCurveTo(4, 11, -3, 7);
+      context.closePath();
+      context.fill();
+      context.beginPath();
+      context.moveTo(-10, 9);
+      context.quadraticCurveTo(-5, 11, 0, 10);
+      context.moveTo(5, -8);
+      context.lineTo(5, -4);
+      context.moveTo(3, -6);
+      context.lineTo(7, -6);
+      context.stroke();
+      break;
+    }
+    case "worker-sweeping": {
+      context.beginPath();
+      context.arc(-3, -8, 3, 0, Math.PI * 2);
+      context.fill();
+      context.beginPath();
+      context.moveTo(-3, -4);
+      context.lineTo(-2, 3);
+      context.lineTo(-7, 10);
+      context.moveTo(-2, 3);
+      context.lineTo(3, 9);
+      context.moveTo(-2, -2);
+      context.lineTo(4, 1);
+      context.lineTo(8, -4);
+      context.moveTo(8, -7);
+      context.lineTo(3, 9);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(1, 8);
+      context.lineTo(7, 11);
+      context.lineTo(10, 7);
+      context.closePath();
+      context.fill();
+      break;
+    }
+    case "shield-check":
+    case "bin-check": {
+      if (type === "bin-check") {
+        context.strokeRect(-6, -4, 12, 13);
+        context.beginPath();
+        context.moveTo(-8, -7);
+        context.lineTo(8, -7);
+        context.moveTo(-3, -10);
+        context.lineTo(3, -10);
+        context.stroke();
+      } else {
+        context.beginPath();
+        context.moveTo(0, -10);
+        context.lineTo(8, -7);
+        context.lineTo(7, 2);
+        context.quadraticCurveTo(5, 8, 0, 11);
+        context.quadraticCurveTo(-5, 8, -7, 2);
+        context.lineTo(-8, -7);
+        context.closePath();
+        context.stroke();
+      }
+      context.beginPath();
+      context.moveTo(-4, 1);
+      context.lineTo(-1, 4);
+      context.lineTo(5, -3);
+      context.stroke();
+      break;
+    }
+    case "waste-bin": {
+      context.strokeRect(-6, -4, 12, 13);
+      context.beginPath();
+      context.moveTo(-8, -7);
+      context.lineTo(8, -7);
+      context.moveTo(-3, -10);
+      context.lineTo(3, -10);
+      context.moveTo(-2, -1);
+      context.lineTo(-2, 6);
+      context.moveTo(2, -1);
+      context.lineTo(2, 6);
+      context.stroke();
+      break;
+    }
+    case "team-five":
+    case "community": {
+      const people = type === "team-five"
+        ? [[0, -7, 3], [-7, -4, 2.4], [7, -4, 2.4], [-10, 1, 1.9], [10, 1, 1.9]]
+        : [[0, -7, 3.2], [-7, -4, 2.5], [7, -4, 2.5]];
+      people.forEach(([cx, cy, radius]) => {
+        context.beginPath();
+        context.arc(cx, cy, radius, 0, Math.PI * 2);
+        context.stroke();
+      });
+      context.beginPath();
+      context.arc(0, 7, 8, Math.PI, 0);
+      context.stroke();
+      context.beginPath();
+      context.arc(-7, 8, 4, Math.PI, 0);
+      context.stroke();
+      context.beginPath();
+      context.arc(7, 8, 4, Math.PI, 0);
+      context.stroke();
+      if (type === "team-five") {
+        context.beginPath();
+        context.arc(-10, 9, 3, Math.PI, 0);
+        context.stroke();
+        context.beginPath();
+        context.arc(10, 9, 3, Math.PI, 0);
+        context.stroke();
+      }
+      break;
+    }
+    case "collection-truck":
+    case "heap-truck": {
+      context.strokeRect(-11, -7, 13, 11);
+      context.beginPath();
+      context.moveTo(2, -3);
+      context.lineTo(7, -3);
+      context.lineTo(11, 1);
+      context.lineTo(11, 4);
+      context.lineTo(2, 4);
+      context.stroke();
+      context.beginPath();
+      context.arc(-6, 7, 2.5, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+      context.arc(7, 7, 2.5, 0, Math.PI * 2);
+      context.stroke();
+      if (type === "heap-truck") {
+        context.beginPath();
+        context.moveTo(-9, -2);
+        context.quadraticCurveTo(-4, -9, 0, -2);
+        context.stroke();
+      }
+      break;
+    }
+    case "house-bin": {
+      context.beginPath();
+      context.moveTo(-11, -2);
+      context.lineTo(-3, -10);
+      context.lineTo(5, -2);
+      context.moveTo(-8, -4);
+      context.lineTo(-8, 8);
+      context.lineTo(2, 8);
+      context.lineTo(2, -4);
+      context.stroke();
+      context.strokeRect(5, 1, 5, 8);
+      context.beginPath();
+      context.moveTo(4, -1);
+      context.lineTo(11, -1);
+      context.stroke();
+      break;
+    }
+    case "water-flow": {
+      context.beginPath();
+      context.moveTo(0, -11);
+      context.bezierCurveTo(-6, -4, -8, 0, -8, 4);
+      context.arc(0, 4, 8, Math.PI, 0, true);
+      context.bezierCurveTo(8, 0, 6, -4, 0, -11);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(-10, 9);
+      context.quadraticCurveTo(-6, 6, -2, 9);
+      context.quadraticCurveTo(2, 12, 6, 9);
+      context.stroke();
+      break;
+    }
+    case "drain-shovel": {
+      context.beginPath();
+      context.moveTo(-11, 5);
+      context.lineTo(9, 5);
+      context.moveTo(-9, 9);
+      context.lineTo(8, 9);
+      context.moveTo(-7, 5);
+      context.lineTo(-5, 9);
+      context.moveTo(-2, 5);
+      context.lineTo(0, 9);
+      context.moveTo(3, 5);
+      context.lineTo(5, 9);
+      context.moveTo(-7, -10);
+      context.lineTo(3, 3);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(1, 1);
+      context.lineTo(7, -1);
+      context.lineTo(8, 5);
+      context.closePath();
+      context.stroke();
+      break;
+    }
+    case "silt-cart": {
+      context.beginPath();
+      context.moveTo(-10, -1);
+      context.lineTo(6, -1);
+      context.lineTo(3, 6);
+      context.lineTo(-7, 6);
+      context.closePath();
+      context.moveTo(6, 0);
+      context.lineTo(11, -4);
+      context.stroke();
+      context.beginPath();
+      context.arc(-4, 9, 2.5, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(-8, -2);
+      context.quadraticCurveTo(-2, -10, 4, -2);
+      context.stroke();
+      break;
+    }
+    case "route": {
+      context.beginPath();
+      context.arc(-7, 7, 2.5, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+      context.arc(7, -7, 2.5, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(-5, 6);
+      context.bezierCurveTo(6, 5, -5, -5, 5, -6);
+      context.stroke();
+      break;
+    }
+    case "waste-heap": {
+      context.beginPath();
+      context.moveTo(-11, 8);
+      context.quadraticCurveTo(-7, 2, -4, 4);
+      context.quadraticCurveTo(-1, -7, 3, 1);
+      context.quadraticCurveTo(7, -3, 11, 8);
+      context.closePath();
+      context.stroke();
+      context.beginPath();
+      context.arc(-7, -5, 1.2, 0, Math.PI * 2);
+      context.moveTo(7, -8);
+      context.lineTo(9, -4);
+      context.stroke();
+      break;
+    }
+    case "camera": {
+      roundedRect(context, -10, -7, 20, 15, 2);
+      context.stroke();
+      context.beginPath();
+      context.arc(0, 0, 4, 0, Math.PI * 2);
+      context.stroke();
+      break;
+    }
+    case "download": {
+      context.beginPath();
+      context.moveTo(0, -10);
+      context.lineTo(0, 4);
+      context.moveTo(-5, 0);
+      context.lineTo(0, 5);
+      context.lineTo(5, 0);
+      context.moveTo(-8, 9);
+      context.lineTo(8, 9);
+      context.stroke();
+      break;
+    }
+    case "location": {
+      context.beginPath();
+      context.arc(0, -3, 7, 0, Math.PI * 2);
+      context.moveTo(-6, 1);
+      context.lineTo(0, 10);
+      context.lineTo(6, 1);
+      context.stroke();
+      break;
+    }
+    case "leaf-broom": {
+      context.beginPath();
+      context.moveTo(-8, 6);
+      context.bezierCurveTo(-7, -4, 0, -9, 7, -8);
+      context.bezierCurveTo(7, 0, 2, 6, -8, 6);
+      context.fill();
+      context.beginPath();
+      context.moveTo(-7, 7);
+      context.lineTo(7, -8);
+      context.moveTo(4, 7);
+      context.lineTo(9, 3);
+      context.lineTo(10, 9);
+      context.closePath();
+      context.stroke();
+      break;
+    }
+    case "leaf": {
+      context.beginPath();
+      context.moveTo(-8, 7);
+      context.bezierCurveTo(-8, -5, 1, -10, 9, -9);
+      context.bezierCurveTo(9, 1, 4, 8, -8, 7);
+      context.fill();
+      context.strokeStyle = POSTER_COLORS.green;
+      context.beginPath();
+      context.moveTo(-6, 5);
+      context.lineTo(6, -6);
+      context.stroke();
+      break;
+    }
+    default: {
+      context.beginPath();
+      context.moveTo(0, -10);
+      context.lineTo(2, -2);
+      context.lineTo(9, 0);
+      context.lineTo(2, 2);
+      context.lineTo(0, 10);
+      context.lineTo(-2, 2);
+      context.lineTo(-9, 0);
+      context.lineTo(-2, -2);
+      context.closePath();
+      context.stroke();
+    }
   }
 
   context.restore();
 }
 
+function drawActivitySummaryIcon(activityKey, x, y, size) {
+  if (activityKey === "manual-sweeping") {
+    drawBenefitIcon("waste-bin", x - 8, y + 2, size * 0.55);
+    drawBenefitIcon("worker-sweeping", x + 6, y, size * 0.72);
+    return;
+  }
+
+  const iconByActivity = {
+    desilting: "drain-shovel",
+    "door-to-door": "house-bin",
+    "heap-collection": "heap-truck",
+  };
+  drawBenefitIcon(iconByActivity[activityKey] || "broom", x, y, size);
+}
+
+function drawOutcomeIcon(type, x, y, radius) {
+  context.save();
+  context.fillStyle = POSTER_COLORS.green;
+  context.beginPath();
+  context.arc(x, y, radius, 0, Math.PI * 2);
+  context.fill();
+  drawBenefitIcon(type, x, y, radius * 1.25);
+  context.restore();
+}
+
 window.addEventListener("beforeunload", () => state.photos.forEach(releasePhoto));
 
-if (document.fonts?.ready) {
+if (document.fonts?.load) {
+  document.fonts
+    .load(`900 42px ${POSTER_FONT}`)
+    .then(scheduleRender)
+    .catch(() => scheduleRender());
+} else if (document.fonts?.ready) {
   document.fonts.ready.then(scheduleRender);
 }
 updateInterface();
