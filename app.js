@@ -69,6 +69,18 @@ const ACTIVITY_DATA = {
     ],
     icons: ["waste-heap", "clean-street", "heap-truck", "bin-check", "team-five"],
   },
+  "road-washing": {
+    label: "Road Washing",
+    title: ["ROAD", "WASHING"],
+    benefits: [
+      ["Road Surface Washing", "Roads are washed to remove dust, mud and settled dirt from the surface."],
+      ["Dust & Mud Removal", "Water washing clears stubborn dust and mud from public streets."],
+      ["Clean & Safe Streets", "Regular washing supports cleaner, safer and healthier surroundings."],
+      ["Controlled Water Use", "Water is applied carefully to clean roads without unnecessary waste."],
+      ["Dedicated Sanitation Team", "Our trained staff works for cleaner roads and a healthier community."],
+    ],
+    icons: ["road-wash", "water-flow", "shield-check", "water-truck", "team-five"],
+  },
 };
 
 const state = {
@@ -1095,8 +1107,18 @@ function drawBenefitIcon(type, x, y, size = 24) {
       break;
     }
     case "collection-truck":
-    case "heap-truck": {
-      context.strokeRect(-11, -7, 13, 11);
+    case "heap-truck":
+    case "water-truck": {
+      if (type === "water-truck") {
+        roundedRect(context, -11, -7, 13, 11, 5);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(-8, 0);
+        context.quadraticCurveTo(-5, -3, -2, 0);
+        context.stroke();
+      } else {
+        context.strokeRect(-11, -7, 13, 11);
+      }
       context.beginPath();
       context.moveTo(2, -3);
       context.lineTo(7, -3);
@@ -1132,6 +1154,26 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.beginPath();
       context.moveTo(4, -1);
       context.lineTo(11, -1);
+      context.stroke();
+      break;
+    }
+    case "road-wash": {
+      context.beginPath();
+      context.moveTo(-11, -8);
+      context.quadraticCurveTo(-9, -1, -4, 0);
+      context.stroke();
+      context.strokeRect(-4, -2, 6, 4);
+      context.beginPath();
+      context.moveTo(2, -1);
+      context.quadraticCurveTo(6, 0, 10, 3);
+      context.moveTo(2, 2);
+      context.quadraticCurveTo(6, 3, 9, 6);
+      context.moveTo(-10, 9);
+      context.lineTo(11, 9);
+      context.moveTo(-6, 6);
+      context.lineTo(-3, 3);
+      context.moveTo(6, 6);
+      context.lineTo(3, 3);
       context.stroke();
       break;
     }
@@ -1306,6 +1348,7 @@ function drawActivitySummaryIcon(activityKey, x, y, size) {
     desilting: "drain-shovel",
     "door-to-door": "house-bin",
     "heap-collection": "heap-truck",
+    "road-washing": "water-truck",
   };
   drawBenefitIcon(iconByActivity[activityKey] || "broom", x, y, size);
 }
