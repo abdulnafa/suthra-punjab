@@ -6,6 +6,7 @@ const UC_DATA = {
   angah: "UC Angah",
   kufri: "UC Kufri",
   uchaali: "UC Uchaali",
+  khura: "UC Khura",
   "mc-naushera": "MC Naushera",
 };
 
@@ -15,6 +16,7 @@ const UC_POSTER_DATA = {
   angah: { top: "UC ANGAH - NAUSHERA", lines: ["UC ANGAH -", "NAUSHERA"] },
   kufri: { top: "UC KUFRI - NAUSHERA", lines: ["UC KUFRI -", "NAUSHERA"] },
   uchaali: { top: "UC UCHAALI - NAUSHERA", lines: ["UC UCHAALI -", "NAUSHERA"] },
+  khura: { top: "UC KHURA - NAUSHERA", lines: ["UC KHURA -", "NAUSHERA"] },
   "mc-naushera": { top: "MC NAUSHERA", lines: ["MC NAUSHERA"] },
 };
 
