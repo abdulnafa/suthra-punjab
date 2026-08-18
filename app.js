@@ -153,6 +153,66 @@ const ACTIVITY_DATA = {
     ],
     icons: ["graveyard", "weed-removal", "clean-street", "waste-bin", "team-five"],
   },
+  "dust-bin-placement": {
+    label: "Dust Bin Placement",
+    title: ["DUST BIN", "PLACEMENT"],
+    benefits: [
+      ["Strategic Bin Placement", "Dust bins are placed where they are visible, useful and easy to access."],
+      ["Accessible Public Locations", "Suitable public points are selected to support responsible waste disposal."],
+      ["Reduce Open Littering", "Convenient bin access helps discourage littering on streets and open land."],
+      ["Secure & Proper Positioning", "Bins are positioned carefully for safe use and routine collection."],
+      ["Dedicated Placement Team", "Our team places waste containers for cleaner public spaces."],
+    ],
+    icons: ["bin-location", "route", "shield-check", "bin-check", "team-five"],
+  },
+  "equipment-washing": {
+    label: "Equipment Washing",
+    title: ["EQUIPMENT", "WASHING"],
+    benefits: [
+      ["Thorough Equipment Washing", "Sanitation equipment is washed to remove dirt and waste residue."],
+      ["Dirt & Residue Removal", "Stubborn material is cleared from tools and frequently used equipment."],
+      ["Hygienic Working Equipment", "Regular washing supports cleaner and safer daily operations."],
+      ["Careful Drying & Storage", "Clean equipment is handled and stored properly after washing."],
+      ["Dedicated Washing Team", "Our trained staff maintains clean and serviceable equipment."],
+    ],
+    icons: ["equipment-wash", "water-flow", "shield-check", "tools", "team-five"],
+  },
+  "machinery-washing": {
+    label: "Machinery Washing",
+    title: ["MACHINERY", "WASHING"],
+    benefits: [
+      ["Thorough Machinery Washing", "Operational machinery is washed to remove accumulated dirt and grime."],
+      ["Mud & Grease Removal", "Mud, dust and surface residue are cleared from exposed machinery parts."],
+      ["Safe Cleaning Process", "Washing is carried out carefully using appropriate safety practices."],
+      ["Ready for Field Operations", "Clean machinery is prepared for dependable sanitation work."],
+      ["Dedicated Operations Team", "Our staff maintains machinery for cleaner and efficient operations."],
+    ],
+    icons: ["machinery-wash", "water-flow", "shield-check", "gear", "team-five"],
+  },
+  "branding-improvement": {
+    label: "Branding Improvement",
+    title: ["BRANDING", "IMPROVEMENT"],
+    benefits: [
+      ["Clear Public Identity", "Visible branding helps residents recognise sanitation services easily."],
+      ["Improved Signs & Graphics", "Signs, labels and public-facing graphics are refreshed and improved."],
+      ["Consistent Green Branding", "A consistent visual style presents a cleaner and organised appearance."],
+      ["Better Public Awareness", "Clear messages encourage community support for cleanliness activities."],
+      ["Dedicated Branding Team", "Our team improves service visibility across public locations."],
+    ],
+    icons: ["branding", "signboard", "leaf", "megaphone", "team-five"],
+  },
+  "tehsil-entry-points-cleaning": {
+    label: "Tehsil Entry Points Cleaning",
+    title: ["TEHSIL ENTRY", "POINTS CLEANING"],
+    benefits: [
+      ["Clean Entry Points", "Main tehsil entrances are cleaned to create a positive first impression."],
+      ["Roadside Litter Removal", "Waste and scattered litter are removed from roadsides and verges."],
+      ["Neat Welcome Areas", "Approach routes and welcome spaces are kept orderly and presentable."],
+      ["Proper Waste Collection", "Collected material is gathered and transferred for proper disposal."],
+      ["Dedicated Sanitation Team", "Our staff maintains clean and welcoming tehsil entry points."],
+    ],
+    icons: ["entry-gate", "clean-street", "shield-check", "waste-bin", "team-five"],
+  },
 };
 
 const state = {
@@ -659,7 +719,8 @@ function drawInformationPanel() {
 
   const titleBaselines = titleLines.length > 1 ? [166, 209] : [187];
   titleLines.forEach((line, index) => {
-    drawFittedText(line, 18, titleBaselines[index], 178, 52, 28, 52, 900, POSTER_COLORS.title, "left", POSTER_FONT);
+    const minimumTitleSize = line.length > 12 ? 23 : 28;
+    drawFittedText(line, 18, titleBaselines[index], 178, 52, minimumTitleSize, 52, 900, POSTER_COLORS.title, "left", POSTER_FONT);
   });
 
   const badgeY = 216;
@@ -788,7 +849,19 @@ function drawBottomSummary() {
 
   drawFittedText("ACTIVITY", 258, y + 20, 105, 15.5, 10, 14, 850, "#dce36c", "center", POSTER_FONT);
   drawActivitySummaryIcon(state.activity, 240, y + 43, 27);
-  drawWrappedCenteredText(activityLabel, 258, y + 42, 105, 15, 15.5, 2, "#ffffff", 850, POSTER_FONT);
+  const compactActivityLabel = activityLabel.length > 21;
+  drawWrappedCenteredText(
+    activityLabel,
+    258,
+    y + 42,
+    105,
+    compactActivityLabel ? 13 : 15,
+    compactActivityLabel ? 13.5 : 15.5,
+    2,
+    "#ffffff",
+    850,
+    POSTER_FONT,
+  );
 
   const outcomes = [
     ["Clean Streets", "leaf-broom"],
@@ -1166,6 +1239,27 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.fill();
       break;
     }
+    case "bin-location": {
+      context.strokeRect(-10, -1, 9, 10);
+      context.beginPath();
+      context.moveTo(-11, -4);
+      context.lineTo(0, -4);
+      context.moveTo(-8, -7);
+      context.lineTo(-3, -7);
+      context.moveTo(-7, 2);
+      context.lineTo(-7, 7);
+      context.stroke();
+      context.beginPath();
+      context.arc(6, -4, 4, Math.PI, 0);
+      context.bezierCurveTo(10, 0, 6, 5, 6, 5);
+      context.bezierCurveTo(6, 5, 2, 0, 2, -4);
+      context.closePath();
+      context.stroke();
+      context.beginPath();
+      context.arc(6, -4, 1.3, 0, Math.PI * 2);
+      context.fill();
+      break;
+    }
     case "medical-bin": {
       context.strokeRect(-7, -3, 14, 12);
       context.beginPath();
@@ -1292,6 +1386,23 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.stroke();
       break;
     }
+    case "entry-gate": {
+      context.strokeRect(-11, -4, 5, 14);
+      context.strokeRect(6, -4, 5, 14);
+      context.beginPath();
+      context.moveTo(-11, -4);
+      context.quadraticCurveTo(0, -12, 11, -4);
+      context.moveTo(-6, 10);
+      context.lineTo(-6, 2);
+      context.quadraticCurveTo(0, -4, 6, 2);
+      context.lineTo(6, 10);
+      context.moveTo(-11, 1);
+      context.lineTo(-6, 1);
+      context.moveTo(6, 1);
+      context.lineTo(11, 1);
+      context.stroke();
+      break;
+    }
     case "mosque": {
       context.beginPath();
       context.moveTo(-7, 10);
@@ -1375,6 +1486,78 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.stroke();
       break;
     }
+    case "equipment-wash": {
+      context.beginPath();
+      context.moveTo(-10, -9);
+      context.lineTo(2, 5);
+      context.moveTo(-7, 8);
+      context.lineTo(4, -7);
+      context.moveTo(0, 4);
+      context.lineTo(7, 8);
+      context.lineTo(10, 4);
+      context.closePath();
+      context.stroke();
+      context.beginPath();
+      context.arc(7, -6, 1.5, 0, Math.PI * 2);
+      context.fill();
+      context.beginPath();
+      context.arc(10, -1, 1.1, 0, Math.PI * 2);
+      context.fill();
+      break;
+    }
+    case "tools": {
+      context.beginPath();
+      context.moveTo(-9, -9);
+      context.lineTo(8, 9);
+      context.moveTo(8, -9);
+      context.lineTo(-8, 9);
+      context.moveTo(-11, -7);
+      context.lineTo(-7, -11);
+      context.moveTo(6, -10);
+      context.lineTo(10, -6);
+      context.moveTo(-10, 7);
+      context.lineTo(-6, 11);
+      context.stroke();
+      break;
+    }
+    case "gear": {
+      context.beginPath();
+      context.arc(0, 0, 8, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+      context.arc(0, 0, 3, 0, Math.PI * 2);
+      context.stroke();
+      for (let spoke = 0; spoke < 8; spoke += 1) {
+        const angle = (spoke * Math.PI) / 4;
+        context.beginPath();
+        context.moveTo(Math.cos(angle) * 8, Math.sin(angle) * 8);
+        context.lineTo(Math.cos(angle) * 11, Math.sin(angle) * 11);
+        context.stroke();
+      }
+      break;
+    }
+    case "machinery-wash": {
+      context.beginPath();
+      context.arc(-2, 2, 6.5, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+      context.arc(-2, 2, 2.3, 0, Math.PI * 2);
+      context.stroke();
+      for (let spoke = 0; spoke < 6; spoke += 1) {
+        const angle = (spoke * Math.PI) / 3;
+        context.beginPath();
+        context.moveTo(-2 + Math.cos(angle) * 6.5, 2 + Math.sin(angle) * 6.5);
+        context.lineTo(-2 + Math.cos(angle) * 9, 2 + Math.sin(angle) * 9);
+        context.stroke();
+      }
+      context.beginPath();
+      context.moveTo(5, -9);
+      context.quadraticCurveTo(9, -7, 11, -3);
+      context.moveTo(6, -5);
+      context.quadraticCurveTo(9, -3, 10, 0);
+      context.stroke();
+      break;
+    }
     case "disinfect": {
       roundedRect(context, -5, 0, 10, 10, 2);
       context.stroke();
@@ -1407,6 +1590,37 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.lineTo(1, 5);
       context.moveTo(8, -7);
       context.quadraticCurveTo(12, -3, 9, 1);
+      context.stroke();
+      break;
+    }
+    case "branding": {
+      roundedRect(context, -10, -8, 14, 6, 2);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(4, -5);
+      context.lineTo(8, -5);
+      context.lineTo(8, 5);
+      context.lineTo(2, 5);
+      context.lineTo(2, 10);
+      context.moveTo(-8, 3);
+      context.lineTo(-8, 7);
+      context.moveTo(-10, 5);
+      context.lineTo(-6, 5);
+      context.stroke();
+      break;
+    }
+    case "signboard": {
+      roundedRect(context, -10, -8, 20, 11, 2);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(-6, -4.5);
+      context.lineTo(6, -4.5);
+      context.moveTo(-6, -1);
+      context.lineTo(3, -1);
+      context.moveTo(-6, 3);
+      context.lineTo(-6, 10);
+      context.moveTo(6, 3);
+      context.lineTo(6, 10);
       context.stroke();
       break;
     }
@@ -1588,6 +1802,11 @@ function drawActivitySummaryIcon(activityKey, x, y, size) {
     awareness: "megaphone",
     "masjid-cleaning": "mosque",
     "graveyard-cleaning": "graveyard",
+    "dust-bin-placement": "bin-location",
+    "equipment-washing": "equipment-wash",
+    "machinery-washing": "machinery-wash",
+    "branding-improvement": "branding",
+    "tehsil-entry-points-cleaning": "entry-gate",
   };
   drawBenefitIcon(iconByActivity[activityKey] || "broom", x, y, size);
 }
