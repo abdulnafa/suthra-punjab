@@ -15,7 +15,7 @@ const UC_POSTER_DATA = {
   angah: { top: "UC ANGAH - NAUSHERA", lines: ["UC ANGAH -", "NAUSHERA"] },
   kufri: { top: "UC KUFRI - NAUSHERA", lines: ["UC KUFRI -", "NAUSHERA"] },
   uchaali: { top: "UC UCHAALI - NAUSHERA", lines: ["UC UCHAALI -", "NAUSHERA"] },
-  "mc-naushera": { top: "MC NAUSHERA - NAUSHERA", lines: ["MC NAUSHERA -", "NAUSHERA"] },
+  "mc-naushera": { top: "MC NAUSHERA", lines: ["MC NAUSHERA"] },
 };
 
 const ACTIVITY_DATA = {
