@@ -129,6 +129,30 @@ const ACTIVITY_DATA = {
     ],
     icons: ["megaphone", "community", "waste-bin", "shield-check", "team-five"],
   },
+  "masjid-cleaning": {
+    label: "Masjid Cleaning",
+    title: ["MASJID", "CLEANING"],
+    benefits: [
+      ["Clean Prayer Areas", "Floors and shared prayer areas are cleaned carefully and respectfully."],
+      ["Entrance & Courtyard Cleaning", "Entrances, courtyards and surrounding spaces are swept and cleaned."],
+      ["Hygienic Ablution Areas", "Ablution surroundings are maintained for a cleaner and safer environment."],
+      ["Proper Waste Collection", "Litter is gathered in bins and transferred for appropriate disposal."],
+      ["Dedicated Sanitation Team", "Our staff serves these community spaces with care and respect."],
+    ],
+    icons: ["mosque", "broom", "water-flow", "waste-bin", "team-five"],
+  },
+  "graveyard-cleaning": {
+    label: "Graveyard Cleaning",
+    title: ["GRAVEYARD", "CLEANING"],
+    benefits: [
+      ["Clean Graveyard Grounds", "Litter and unwanted debris are carefully removed from shared grounds."],
+      ["Weed & Overgrowth Removal", "Excess weeds and overgrowth are cleared from accessible public areas."],
+      ["Clear Walking Paths", "Walking paths are kept clean and accessible for visitors."],
+      ["Respectful Waste Collection", "Collected material is removed carefully and transferred for disposal."],
+      ["Dedicated Sanitation Team", "Our staff performs cleaning duties with care and respect."],
+    ],
+    icons: ["graveyard", "weed-removal", "clean-street", "waste-bin", "team-five"],
+  },
 };
 
 const state = {
@@ -1268,6 +1292,69 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.stroke();
       break;
     }
+    case "mosque": {
+      context.beginPath();
+      context.moveTo(-7, 10);
+      context.lineTo(-7, 0);
+      context.bezierCurveTo(-7, -5, -3, -7, 0, -10);
+      context.bezierCurveTo(3, -7, 7, -5, 7, 0);
+      context.lineTo(7, 10);
+      context.moveTo(-11, 10);
+      context.lineTo(11, 10);
+      context.moveTo(-10, 9);
+      context.lineTo(-10, -4);
+      context.quadraticCurveTo(-10, -7, -8, -4);
+      context.moveTo(10, 9);
+      context.lineTo(10, -4);
+      context.quadraticCurveTo(10, -7, 8, -4);
+      context.stroke();
+      context.beginPath();
+      context.arc(0, 6, 2.7, Math.PI, 0);
+      context.lineTo(2.7, 10);
+      context.moveTo(-2.7, 6);
+      context.lineTo(-2.7, 10);
+      context.stroke();
+      break;
+    }
+    case "graveyard": {
+      context.beginPath();
+      context.moveTo(-7, 9);
+      context.lineTo(-7, -2);
+      context.quadraticCurveTo(-7, -9, 0, -10);
+      context.quadraticCurveTo(7, -9, 7, -2);
+      context.lineTo(7, 9);
+      context.closePath();
+      context.stroke();
+      context.beginPath();
+      context.arc(-1, -2, 2.7, 0.6 * Math.PI, 1.8 * Math.PI);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(-11, 10);
+      context.lineTo(11, 10);
+      context.moveTo(7, 7);
+      context.quadraticCurveTo(10, 5, 11, 2);
+      context.moveTo(9, 5);
+      context.lineTo(11, 6);
+      context.stroke();
+      break;
+    }
+    case "weed-removal": {
+      context.beginPath();
+      context.moveTo(-2, 9);
+      context.quadraticCurveTo(-2, 2, -6, -3);
+      context.moveTo(-2, 6);
+      context.quadraticCurveTo(2, 1, 5, -4);
+      context.moveTo(-4, 1);
+      context.quadraticCurveTo(-9, 0, -9, -4);
+      context.moveTo(2, 1);
+      context.quadraticCurveTo(7, 1, 8, -3);
+      context.moveTo(-10, -9);
+      context.lineTo(6, 9);
+      context.moveTo(4, 7);
+      context.lineTo(10, 4);
+      context.stroke();
+      break;
+    }
     case "road-wash": {
       context.beginPath();
       context.moveTo(-11, -8);
@@ -1499,6 +1586,8 @@ function drawActivitySummaryIcon(activityKey, x, y, size) {
     "dustbin-washing": "bin-wash",
     "hospital-cleaning": "hospital",
     awareness: "megaphone",
+    "masjid-cleaning": "mosque",
+    "graveyard-cleaning": "graveyard",
   };
   drawBenefitIcon(iconByActivity[activityKey] || "broom", x, y, size);
 }
