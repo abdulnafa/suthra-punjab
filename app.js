@@ -81,6 +81,54 @@ const ACTIVITY_DATA = {
     ],
     icons: ["road-wash", "water-flow", "shield-check", "water-truck", "team-five"],
   },
+  "school-cleaning": {
+    label: "School Cleaning",
+    title: ["SCHOOL", "CLEANING"],
+    benefits: [
+      ["Clean School Premises", "Classrooms, corridors and school grounds are cleaned thoroughly."],
+      ["Sweeping & Litter Removal", "Dust, paper and scattered litter are removed from learning spaces."],
+      ["Hygienic Learning Environment", "Regular cleaning supports a healthier environment for students and staff."],
+      ["Proper Waste Collection", "School waste is gathered in bins and transferred for proper disposal."],
+      ["Dedicated Sanitation Team", "Our sanitation staff works for cleaner and healthier schools."],
+    ],
+    icons: ["school", "broom", "shield-check", "waste-bin", "team-five"],
+  },
+  "dustbin-washing": {
+    label: "Dustbin Washing",
+    title: ["DUSTBIN", "WASHING"],
+    benefits: [
+      ["Thorough Bin Washing", "Dustbins are washed carefully to remove accumulated grime and residue."],
+      ["Dirt & Residue Removal", "Stuck waste and dirt are cleared from inside and outside each bin."],
+      ["Disinfection & Odour Control", "Clean washing helps control germs, unpleasant smells and contamination."],
+      ["Clean Bin Placement", "Washed bins are returned neatly for safe and convenient public use."],
+      ["Dedicated Sanitation Team", "Our trained staff maintains clean and hygienic waste containers."],
+    ],
+    icons: ["bin-wash", "water-flow", "shield-check", "bin-check", "team-five"],
+  },
+  "hospital-cleaning": {
+    label: "Hospital Cleaning",
+    title: ["HOSPITAL", "CLEANING"],
+    benefits: [
+      ["Clean Hospital Premises", "Public areas, entrances and surrounding spaces are cleaned thoroughly."],
+      ["Safe Waste Collection", "Waste is collected carefully and kept away from public access areas."],
+      ["Hygienic Public Areas", "Regular cleaning supports safer surroundings for patients and visitors."],
+      ["Disinfection Support", "Frequently used areas receive focused cleaning for improved hygiene."],
+      ["Dedicated Sanitation Team", "Our sanitation staff works responsibly in sensitive public spaces."],
+    ],
+    icons: ["hospital", "medical-bin", "shield-check", "disinfect", "team-five"],
+  },
+  awareness: {
+    label: "Awareness",
+    title: ["AWARENESS"],
+    benefits: [
+      ["Cleanliness Awareness", "Citizens are guided about keeping streets and public places clean."],
+      ["Community Participation", "Residents are encouraged to take part in local cleanliness efforts."],
+      ["Proper Waste Disposal", "People are advised to use dustbins and avoid littering in open areas."],
+      ["Healthy Daily Habits", "Simple hygiene habits help create a cleaner and healthier community."],
+      ["Dedicated Awareness Team", "Our team shares practical messages for a cleaner environment."],
+    ],
+    icons: ["megaphone", "community", "waste-bin", "shield-check", "team-five"],
+  },
 };
 
 const state = {
@@ -1077,6 +1125,37 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.stroke();
       break;
     }
+    case "bin-wash": {
+      context.strokeRect(-8, -3, 11, 12);
+      context.beginPath();
+      context.moveTo(-10, -6);
+      context.lineTo(5, -6);
+      context.moveTo(-5, -9);
+      context.lineTo(0, -9);
+      context.moveTo(6, -8);
+      context.quadraticCurveTo(10, -6, 11, -2);
+      context.moveTo(7, -3);
+      context.quadraticCurveTo(10, -1, 10, 3);
+      context.stroke();
+      context.beginPath();
+      context.arc(7, 5, 1.2, 0, Math.PI * 2);
+      context.fill();
+      break;
+    }
+    case "medical-bin": {
+      context.strokeRect(-7, -3, 14, 12);
+      context.beginPath();
+      context.moveTo(-9, -6);
+      context.lineTo(9, -6);
+      context.moveTo(-3, -9);
+      context.lineTo(3, -9);
+      context.moveTo(0, -1);
+      context.lineTo(0, 6);
+      context.moveTo(-3.5, 2.5);
+      context.lineTo(3.5, 2.5);
+      context.stroke();
+      break;
+    }
     case "team-five":
     case "community": {
       const people = type === "team-five"
@@ -1157,6 +1236,38 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.stroke();
       break;
     }
+    case "school": {
+      context.beginPath();
+      context.moveTo(-11, -3);
+      context.lineTo(0, -10);
+      context.lineTo(11, -3);
+      context.moveTo(-9, -4);
+      context.lineTo(-9, 10);
+      context.lineTo(9, 10);
+      context.lineTo(9, -4);
+      context.stroke();
+      context.strokeRect(-2.5, 3, 5, 7);
+      context.strokeRect(-7, 0, 3, 3);
+      context.strokeRect(4, 0, 3, 3);
+      break;
+    }
+    case "hospital": {
+      context.strokeRect(-9, -8, 18, 18);
+      context.beginPath();
+      context.moveTo(0, -6);
+      context.lineTo(0, 1);
+      context.moveTo(-3.5, -2.5);
+      context.lineTo(3.5, -2.5);
+      context.stroke();
+      context.strokeRect(-2.5, 4, 5, 6);
+      context.beginPath();
+      context.moveTo(-7, 2);
+      context.lineTo(-5, 2);
+      context.moveTo(5, 2);
+      context.lineTo(7, 2);
+      context.stroke();
+      break;
+    }
     case "road-wash": {
       context.beginPath();
       context.moveTo(-11, -8);
@@ -1174,6 +1285,41 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.lineTo(-3, 3);
       context.moveTo(6, 6);
       context.lineTo(3, 3);
+      context.stroke();
+      break;
+    }
+    case "disinfect": {
+      roundedRect(context, -5, 0, 10, 10, 2);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(-2, 0);
+      context.lineTo(-2, -5);
+      context.lineTo(4, -5);
+      context.moveTo(1, -8);
+      context.lineTo(7, -8);
+      context.lineTo(9, -6);
+      context.moveTo(8, -2);
+      context.lineTo(8, 2);
+      context.moveTo(6, 0);
+      context.lineTo(10, 0);
+      context.stroke();
+      break;
+    }
+    case "megaphone": {
+      context.beginPath();
+      context.moveTo(-9, -4);
+      context.lineTo(5, -10);
+      context.lineTo(5, 6);
+      context.lineTo(-9, 2);
+      context.closePath();
+      context.stroke();
+      context.beginPath();
+      context.moveTo(-5, 3);
+      context.lineTo(-2, 10);
+      context.lineTo(3, 9);
+      context.lineTo(1, 5);
+      context.moveTo(8, -7);
+      context.quadraticCurveTo(12, -3, 9, 1);
       context.stroke();
       break;
     }
@@ -1349,6 +1495,10 @@ function drawActivitySummaryIcon(activityKey, x, y, size) {
     "door-to-door": "house-bin",
     "heap-collection": "heap-truck",
     "road-washing": "water-truck",
+    "school-cleaning": "school",
+    "dustbin-washing": "bin-wash",
+    "hospital-cleaning": "hospital",
+    awareness: "megaphone",
   };
   drawBenefitIcon(iconByActivity[activityKey] || "broom", x, y, size);
 }
