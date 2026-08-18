@@ -7,6 +7,8 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 - UC options: UC Khabeki, UC Mardwal and UC Angah
 - Activity options: Desilting, Door to Door, Manual Sweeping and Heap Collection
 - Six separate JPG/PNG/WebP upload boxes with replace, remove and drag-and-drop support
+- Mobile bulk selection that fills the six empty photo boxes in order
+- Mobile-first two-column photo layout with a safe-area-aware download bar
 - Live poster preview based on the supplied 535 × 725 reference layout
 - Sharp 1070 × 1450 JPG download
 - All processing happens locally in the browser; photos are never uploaded

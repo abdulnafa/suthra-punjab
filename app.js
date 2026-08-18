@@ -64,7 +64,7 @@ const state = {
 };
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
-const MAX_IMAGE_SIDE = 2200;
+const MAX_IMAGE_SIDE = 1200;
 const SUPPORTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const LOGICAL_WIDTH = 535;
 const LOGICAL_HEIGHT = 725;
@@ -76,6 +76,9 @@ const elements = {
   uploadSection: document.querySelector("#uploadSection"),
   uploadCards: [...document.querySelectorAll(".upload-card")],
   photoProgress: document.querySelector("#photoProgress"),
+  photoProgressTrack: document.querySelector("#photoProgressTrack"),
+  photoProgressFill: document.querySelector("#photoProgressFill"),
+  bulkPhotos: document.querySelector("#bulkPhotos"),
   statusMessage: document.querySelector("#statusMessage"),
   resetButton: document.querySelector("#resetButton"),
   downloadButton: document.querySelector("#downloadButton"),
@@ -86,6 +89,7 @@ const context = elements.canvas.getContext("2d", { alpha: false });
 const photoLoadTokens = Array(6).fill(0);
 let renderQueued = false;
 let isExporting = false;
+let isBulkLoading = false;
 
 function setStatus(message = "", isError = false) {
   elements.statusMessage.textContent = message;
@@ -100,24 +104,40 @@ function updateInterface() {
   elements.activitySelect.disabled = !state.uc || isExporting;
   elements.uploadSection.classList.toggle("is-disabled", !detailsReady);
   elements.photoProgress.textContent = `${uploadedCount} / 6`;
+  elements.photoProgressTrack.setAttribute("aria-valuenow", String(uploadedCount));
+  elements.photoProgressFill.style.width = `${(uploadedCount / 6) * 100}%`;
+  elements.bulkPhotos.disabled = !detailsReady || uploadedCount === 6 || isExporting || isBulkLoading;
 
   elements.uploadCards.forEach((card) => {
     const input = card.querySelector("input[type='file']");
     const removeButton = card.querySelector(".remove-photo");
-    input.disabled = !detailsReady || isExporting;
+    input.disabled = !detailsReady || isExporting || card.classList.contains("is-loading");
     removeButton.disabled = isExporting;
   });
 
   const complete = detailsReady && uploadedCount === 6;
   elements.downloadButton.disabled = !complete || isExporting;
   elements.resetButton.disabled = isExporting;
+  document.body.classList.toggle("details-ready", detailsReady);
+  document.body.classList.toggle("banner-ready", complete);
+
+  if (isExporting) {
+    elements.downloadButton.textContent = "Preparing banner…";
+  } else if (complete) {
+    elements.downloadButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 19h14"></path></svg>Download banner';
+  } else if (detailsReady) {
+    const remaining = 6 - uploadedCount;
+    elements.downloadButton.textContent = `${remaining} photo${remaining === 1 ? "" : "s"} remaining`;
+  } else {
+    elements.downloadButton.textContent = "Download banner";
+  }
 
   if (!detailsReady) {
     setStatus(state.uc ? "Now select an activity to unlock photo uploads." : "Select a UC to begin.");
   } else if (uploadedCount < 6) {
     setStatus(`${6 - uploadedCount} photo${6 - uploadedCount === 1 ? "" : "s"} remaining.`);
   } else {
-    setStatus("Your banner is ready to download.");
+    setStatus("Your banner is ready. Preview it below or download now.");
   }
 
   scheduleRender();
@@ -135,6 +155,32 @@ elements.ucSelect.addEventListener("change", (event) => {
 elements.activitySelect.addEventListener("change", (event) => {
   state.activity = event.target.value;
   updateInterface();
+
+  if (state.activity && window.matchMedia("(max-width: 560px)").matches) {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.requestAnimationFrame(() => {
+      elements.uploadSection.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    });
+  }
+});
+
+elements.bulkPhotos.addEventListener("change", async (event) => {
+  const files = [...event.target.files];
+  const emptySlots = state.photos
+    .map((photo, index) => (photo ? -1 : index))
+    .filter((index) => index >= 0);
+
+  isBulkLoading = true;
+  updateInterface();
+  try {
+    for (let index = 0; index < Math.min(files.length, emptySlots.length); index += 1) {
+      await setPhoto(emptySlots[index], files[index]);
+    }
+  } finally {
+    isBulkLoading = false;
+    elements.bulkPhotos.value = "";
+    updateInterface();
+  }
 });
 
 elements.uploadCards.forEach((card, index) => {
@@ -196,7 +242,11 @@ async function setPhoto(index, file) {
 
   const card = elements.uploadCards[index];
   card.classList.add("is-loading");
+  card.setAttribute("aria-busy", "true");
+  input.disabled = true;
   setStatus(`Preparing photo ${index + 1}…`);
+
+  let finalMessage = null;
 
   try {
     const prepared = await prepareImage(file);
@@ -211,15 +261,19 @@ async function setPhoto(index, file) {
     preview.src = prepared.url;
     input.setAttribute("aria-label", `Replace photo ${index + 1}`);
     card.classList.add("has-photo");
-    updateInterface();
   } catch (error) {
     if (loadToken === photoLoadTokens[index]) {
       input.value = "";
-      setStatus("This image could not be opened. Please try another JPG, PNG or WebP file.", true);
+      finalMessage = "This image could not be opened. Please try another JPG, PNG or WebP file.";
       console.error(error);
     }
   } finally {
-    if (loadToken === photoLoadTokens[index]) card.classList.remove("is-loading");
+    if (loadToken === photoLoadTokens[index]) {
+      card.classList.remove("is-loading");
+      card.setAttribute("aria-busy", "false");
+      updateInterface();
+      if (finalMessage) setStatus(finalMessage, true);
+    }
   }
 }
 
@@ -249,27 +303,36 @@ async function prepareImage(file) {
     return { fileName: file.name, url: sourceUrl, image: sourceImage };
   }
 
-  const scale = MAX_IMAGE_SIDE / longestSide;
-  const resizeCanvas = document.createElement("canvas");
-  resizeCanvas.width = Math.max(1, Math.round(sourceImage.naturalWidth * scale));
-  resizeCanvas.height = Math.max(1, Math.round(sourceImage.naturalHeight * scale));
-  const resizeContext = resizeCanvas.getContext("2d");
-  resizeContext.imageSmoothingEnabled = true;
-  resizeContext.imageSmoothingQuality = "high";
-  resizeContext.drawImage(sourceImage, 0, 0, resizeCanvas.width, resizeCanvas.height);
+  let resizedBlob;
+  try {
+    const scale = MAX_IMAGE_SIDE / longestSide;
+    const resizeCanvas = document.createElement("canvas");
+    resizeCanvas.width = Math.max(1, Math.round(sourceImage.naturalWidth * scale));
+    resizeCanvas.height = Math.max(1, Math.round(sourceImage.naturalHeight * scale));
+    const resizeContext = resizeCanvas.getContext("2d");
+    resizeContext.imageSmoothingEnabled = true;
+    resizeContext.imageSmoothingQuality = "high";
+    resizeContext.drawImage(sourceImage, 0, 0, resizeCanvas.width, resizeCanvas.height);
 
-  const resizedBlob = await new Promise((resolve, reject) => {
-    resizeCanvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error("Image resize failed"))),
-      "image/jpeg",
-      0.93,
-    );
-  });
+    resizedBlob = await new Promise((resolve, reject) => {
+      resizeCanvas.toBlob(
+        (blob) => (blob ? resolve(blob) : reject(new Error("Image resize failed"))),
+        "image/jpeg",
+        0.93,
+      );
+    });
+  } finally {
+    URL.revokeObjectURL(sourceUrl);
+  }
 
-  URL.revokeObjectURL(sourceUrl);
   const resizedUrl = URL.createObjectURL(resizedBlob);
-  const resizedImage = await loadImage(resizedUrl);
-  return { fileName: file.name, url: resizedUrl, image: resizedImage };
+  try {
+    const resizedImage = await loadImage(resizedUrl);
+    return { fileName: file.name, url: resizedUrl, image: resizedImage };
+  } catch (error) {
+    URL.revokeObjectURL(resizedUrl);
+    throw error;
+  }
 }
 
 function releasePhoto(photo) {
@@ -289,6 +352,7 @@ function removePhoto(index) {
   input.setAttribute("aria-label", `Upload photo ${index + 1}`);
   preview.removeAttribute("src");
   card.classList.remove("has-photo", "is-loading", "is-dragging");
+  card.setAttribute("aria-busy", "false");
   updateInterface();
 }
 
@@ -304,6 +368,7 @@ elements.resetButton.addEventListener("click", () => {
 
   elements.ucSelect.value = "";
   elements.activitySelect.value = "";
+  elements.bulkPhotos.value = "";
   elements.uploadCards.forEach((card, index) => {
     card.classList.remove("has-photo", "is-dragging", "is-loading");
     const input = card.querySelector("input[type='file']");
@@ -323,7 +388,6 @@ elements.downloadButton.addEventListener("click", async () => {
   const exportFileName = `${slugify(exportUcLabel)}-${slugify(exportActivityLabel)}-banner.jpg`;
   isExporting = true;
   updateInterface();
-  elements.downloadButton.textContent = "Preparing download…";
   renderBanner();
   let outcome = null;
 
@@ -350,7 +414,6 @@ elements.downloadButton.addEventListener("click", async () => {
     console.error(error);
   } finally {
     isExporting = false;
-    elements.downloadButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 19h14"></path></svg>Download banner';
     updateInterface();
     if (outcome) setStatus(outcome[0], outcome[1]);
   }

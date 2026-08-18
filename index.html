@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta
       name="description"
       content="Create Suthra Punjab activity banners from six GPS photos directly in your browser."
@@ -26,7 +26,7 @@
           <small>Banner Maker</small>
         </span>
       </a>
-      <div class="privacy-pill">
+      <div class="privacy-pill" aria-label="Photos stay on your device" title="Photos stay on your device">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 3 5 6v5c0 4.7 2.9 8.6 7 10 4.1-1.4 7-5.3 7-10V6l-7-3Z" />
           <path d="m9 12 2 2 4-5" />
@@ -94,6 +94,35 @@
               </div>
               <span id="photoProgress" class="progress-badge">0 / 6</span>
             </div>
+
+            <div
+              id="photoProgressTrack"
+              class="progress-track"
+              role="progressbar"
+              aria-label="Uploaded photos"
+              aria-valuemin="0"
+              aria-valuemax="6"
+              aria-valuenow="0"
+            >
+              <span id="photoProgressFill"></span>
+            </div>
+
+            <label class="bulk-upload" for="bulkPhotos">
+              <input
+                id="bulkPhotos"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                disabled
+              />
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 17v2h16v-2M12 4v11m-4-7 4-4 4 4" />
+              </svg>
+              <span>
+                <strong>Select multiple photos</strong>
+                <small>They will fill the empty boxes in order</small>
+              </span>
+            </label>
 
             <div class="upload-grid">
               <article class="upload-card" data-slot="0">
