@@ -4,12 +4,18 @@ const UC_DATA = {
   khabeki: "UC Khabeki",
   mardwal: "UC Mardwal",
   angah: "UC Angah",
+  kufri: "UC Kufri",
+  uchaali: "UC Uchaali",
+  "mc-naushera": "MC Naushera",
 };
 
 const UC_POSTER_DATA = {
   khabeki: { top: "UC KHABEKI - NAUSHERA", lines: ["UC KHABEKI -", "NAUSHERA"] },
-  mardwal: { top: "UC MARDWAL", lines: ["UC MARDWAL"] },
-  angah: { top: "UC ANGAH", lines: ["UC ANGAH"] },
+  mardwal: { top: "UC MARDWAL - NAUSHERA", lines: ["UC MARDWAL -", "NAUSHERA"] },
+  angah: { top: "UC ANGAH - NAUSHERA", lines: ["UC ANGAH -", "NAUSHERA"] },
+  kufri: { top: "UC KUFRI - NAUSHERA", lines: ["UC KUFRI -", "NAUSHERA"] },
+  uchaali: { top: "UC UCHAALI - NAUSHERA", lines: ["UC UCHAALI -", "NAUSHERA"] },
+  "mc-naushera": { top: "MC NAUSHERA - NAUSHERA", lines: ["MC NAUSHERA -", "NAUSHERA"] },
 };
 
 const ACTIVITY_DATA = {
@@ -156,7 +162,7 @@ function updateInterface() {
   }
 
   if (!detailsReady) {
-    setStatus(state.uc ? "Now select an activity to unlock photo uploads." : "Select a UC to begin.");
+    setStatus(state.uc ? "Now select an activity to unlock photo uploads." : "Select a UC / MC to begin.");
   } else if (uploadedCount < 6) {
     setStatus(`${6 - uploadedCount} photo${6 - uploadedCount === 1 ? "" : "s"} remaining.`);
   } else {
@@ -469,7 +475,7 @@ function renderBanner() {
 
   context.restore();
 
-  const selectedUc = UC_DATA[state.uc] || "UC not selected";
+  const selectedUc = UC_DATA[state.uc] || "area not selected";
   const selectedActivity = ACTIVITY_DATA[state.activity]?.label || "activity not selected";
   elements.canvas.setAttribute("aria-label", `Banner preview for ${selectedUc}, ${selectedActivity}`);
 }
@@ -548,7 +554,7 @@ function drawInformationPanel() {
   const activity = ACTIVITY_DATA[state.activity];
   const titleLines = activity?.title || ["SELECT", "ACTIVITY"];
   const benefits = (activity?.benefits || [
-    ["Choose a UC", "Select one of the available Union Councils to begin."],
+    ["Choose a UC / MC", "Select one of the available areas to begin."],
     ["Choose an Activity", "Select the sanitation activity for this banner."],
     ["Upload Six Photos", "Add six clear GPS-stamped activity photos."],
     ["Review the Banner", "Check every photo in the live preview."],
@@ -557,7 +563,9 @@ function drawInformationPanel() {
   const icons = activity?.icons || ["location", "broom", "camera", "shield-check", "download"];
 
   if (state.activity === "manual-sweeping" && activity) {
-    const place = UC_POSTER_DATA[state.uc]?.top.replace(/^UC\s+/i, "") || "the selected UC";
+    const place = (UC_POSTER_DATA[state.uc]?.top || "the selected area")
+      .replace(/^(?:UC|MC)\s+/i, "")
+      .replace(/^NAUSHERA\s*-\s*NAUSHERA$/i, "NAUSHERA");
     benefits[4][1] = `Our dedicated staff is working hard for a cleaner, greener and better ${titleCasePlace(place)}.`;
   }
 
@@ -578,7 +586,7 @@ function drawInformationPanel() {
   roundedRect(context, 14, ucY, 185, 25, 5);
   context.fillStyle = POSTER_COLORS.green;
   context.fill();
-  const posterUc = UC_POSTER_DATA[state.uc]?.top || "SELECT UC";
+  const posterUc = UC_POSTER_DATA[state.uc]?.top || "SELECT UC / MC";
   drawFittedText(posterUc, 20, ucY + 18, 173, 16.5, 9, 16.5, 850, "#ffffff", "center", POSTER_FONT);
 
   drawFittedText("SUTHRA PUNJAB AGENCY", 15, 294, 184, 15, 10, 15, 850, POSTER_COLORS.ink, "center", POSTER_FONT);
@@ -600,6 +608,8 @@ function titleCasePlace(value) {
   return value
     .toLowerCase()
     .replace(/\b\w/g, (letter) => letter.toUpperCase())
+    .replace(/\bMc\b/g, "MC")
+    .replace(/\bUc\b/g, "UC")
     .replace(/\s+-\s+/g, " - ");
 }
 
@@ -651,7 +661,7 @@ function drawBenefit(row, heading, copy, icon) {
 function drawBottomSummary() {
   const y = 609;
   const h = 72;
-  const ucLines = UC_POSTER_DATA[state.uc]?.lines || ["SELECT UC"];
+  const ucLines = UC_POSTER_DATA[state.uc]?.lines || ["SELECT UC / MC"];
   const activityLabel = (ACTIVITY_DATA[state.activity]?.label || "SELECT ACTIVITY").toUpperCase();
 
   roundedRect(context, 9, y, 201, h, 7);
