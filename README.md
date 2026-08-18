@@ -4,7 +4,7 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 
 ## Features
 
-- Area options: UC Khabeki, UC Mardwal, UC Angah, UC Kufri, UC Uchaali and MC Naushera
+- Area options: UC Khabeki, UC Mardwal, UC Angah, UC Kufri, UC Uchaali, UC Khura and MC Naushera
 - Activity options: Desilting, Door to Door, Manual Sweeping and Heap Collection
 - Six separate JPG/PNG/WebP upload boxes with replace, remove and drag-and-drop support
 - Mobile bulk selection that fills the six empty photo boxes in order
