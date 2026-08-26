@@ -213,6 +213,18 @@ const ACTIVITY_DATA = {
     ],
     icons: ["entry-gate", "clean-street", "shield-check", "waste-bin", "team-five"],
   },
+  "milad-un-nabi-day-cleaning": {
+    label: "Milad un Nabi Day Cleaning",
+    title: ["MILAD UN NABI", "DAY CLEANING"],
+    benefits: [
+      ["Event Route Cleaning", "Streets and public areas along event routes are cleaned with care."],
+      ["Mosque & Gathering Areas", "Mosque surroundings and community gathering areas are kept tidy."],
+      ["Litter Removal", "Scattered litter and used decoration material are removed responsibly."],
+      ["Proper Waste Collection", "Collected waste is gathered and transferred for appropriate disposal."],
+      ["Dedicated Sanitation Team", "Our staff supports clean, safe and respectful celebrations."],
+    ],
+    icons: ["milad-cleaning", "mosque", "clean-street", "waste-bin", "team-five"],
+  },
 };
 
 const state = {
@@ -1427,6 +1439,29 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.stroke();
       break;
     }
+    case "milad-cleaning": {
+      context.beginPath();
+      context.arc(-3, -4, 6.5, 0.35 * Math.PI, 1.65 * Math.PI);
+      context.stroke();
+      context.beginPath();
+      context.arc(0, -4, 4.5, 0.45 * Math.PI, 1.55 * Math.PI);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(7, -10);
+      context.lineTo(7, -5);
+      context.moveTo(4.5, -7.5);
+      context.lineTo(9.5, -7.5);
+      context.moveTo(-8, 9);
+      context.lineTo(5, -1);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(-9, 7);
+      context.lineTo(-3, 10);
+      context.lineTo(-5, 4);
+      context.closePath();
+      context.fill();
+      break;
+    }
     case "graveyard": {
       context.beginPath();
       context.moveTo(-7, 9);
@@ -1807,6 +1842,7 @@ function drawActivitySummaryIcon(activityKey, x, y, size) {
     "machinery-washing": "machinery-wash",
     "branding-improvement": "branding",
     "tehsil-entry-points-cleaning": "entry-gate",
+    "milad-un-nabi-day-cleaning": "milad-cleaning",
   };
   drawBenefitIcon(iconByActivity[activityKey] || "broom", x, y, size);
 }
