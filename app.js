@@ -225,6 +225,18 @@ const ACTIVITY_DATA = {
     ],
     icons: ["milad-cleaning", "mosque", "clean-street", "waste-bin", "team-five"],
   },
+  "public-place-cleaning": {
+    label: "Public Place Cleaning",
+    title: ["PUBLIC PLACE", "CLEANING"],
+    benefits: [
+      ["Clean Public Spaces", "Markets, parks and shared public areas are cleaned thoroughly."],
+      ["Sweeping & Litter Removal", "Dust, wrappers and scattered litter are removed from public spaces."],
+      ["Hygienic Community Areas", "Regular cleaning supports safer and healthier surroundings for everyone."],
+      ["Proper Waste Collection", "Collected waste is gathered and transferred for appropriate disposal."],
+      ["Dedicated Sanitation Team", "Our staff works to maintain clean and welcoming public places."],
+    ],
+    icons: ["public-place", "broom", "shield-check", "waste-bin", "team-five"],
+  },
 };
 
 const state = {
@@ -1381,6 +1393,27 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.strokeRect(4, 0, 3, 3);
       break;
     }
+    case "public-place": {
+      context.beginPath();
+      context.arc(-5, -4, 5.5, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(-5, 1);
+      context.lineTo(-5, 10);
+      context.moveTo(-10, 10);
+      context.lineTo(11, 10);
+      context.moveTo(1, -1);
+      context.lineTo(10, -1);
+      context.lineTo(10, 4);
+      context.lineTo(1, 4);
+      context.closePath();
+      context.moveTo(3, 4);
+      context.lineTo(2, 9);
+      context.moveTo(8, 4);
+      context.lineTo(9, 9);
+      context.stroke();
+      break;
+    }
     case "hospital": {
       context.strokeRect(-9, -8, 18, 18);
       context.beginPath();
@@ -1843,6 +1876,7 @@ function drawActivitySummaryIcon(activityKey, x, y, size) {
     "branding-improvement": "branding",
     "tehsil-entry-points-cleaning": "entry-gate",
     "milad-un-nabi-day-cleaning": "milad-cleaning",
+    "public-place-cleaning": "public-place",
   };
   drawBenefitIcon(iconByActivity[activityKey] || "broom", x, y, size);
 }
