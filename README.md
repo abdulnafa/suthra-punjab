@@ -4,7 +4,7 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 
 ## Features
 
-- Area options: UC Khabeki, UC Mardwal, UC Angah, UC Kufri, UC Uchaali, UC Khura and MC Naushera
+- Area options: UC Khabeki, UC Mardwal, UC Angah, UC Kufri, UC Uchaali, UC Khura, MC Naushera and Tehsil Naushera
 - Activity options: Desilting, Door to Door, Manual Sweeping, Heap Collection, Road Washing, School Cleaning, Dustbin Washing, Hospital Cleaning, Awareness, Masjid Cleaning, Graveyard Cleaning, Dust Bin Placement, Equipment Washing, Machinery Washing, Branding Improvement, Tehsil Entry Points Cleaning, Milad un Nabi Day Cleaning and Public Place Cleaning
 - Six separate JPG/PNG/WebP upload boxes with replace, remove and drag-and-drop support
 - Mobile bulk selection that fills the six empty photo boxes in order

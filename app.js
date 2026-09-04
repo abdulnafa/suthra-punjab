@@ -8,6 +8,7 @@ const UC_DATA = {
   uchaali: "UC Uchaali",
   khura: "UC Khura",
   "mc-naushera": "MC Naushera",
+  "tehsil-naushera": "Tehsil Naushera",
 };
 
 const UC_POSTER_DATA = {
@@ -18,6 +19,7 @@ const UC_POSTER_DATA = {
   uchaali: { top: "UC UCHAALI - NAUSHERA", lines: ["UC UCHAALI -", "NAUSHERA"] },
   khura: { top: "UC KHURA - NAUSHERA", lines: ["UC KHURA -", "NAUSHERA"] },
   "mc-naushera": { top: "MC NAUSHERA", lines: ["MC NAUSHERA"] },
+  "tehsil-naushera": { top: "TEHSIL NAUSHERA", lines: ["TEHSIL", "NAUSHERA"] },
 };
 
 const ACTIVITY_DATA = {
