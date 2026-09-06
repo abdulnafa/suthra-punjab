@@ -44,6 +44,197 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+body.auth-locked {
+  overflow: hidden;
+}
+
+.auth-gate {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  overflow-y: auto;
+  padding:
+    max(22px, env(safe-area-inset-top))
+    max(14px, env(safe-area-inset-right))
+    max(22px, env(safe-area-inset-bottom))
+    max(14px, env(safe-area-inset-left));
+  background:
+    radial-gradient(circle at 12% 5%, rgba(142, 188, 102, 0.24), transparent 28rem),
+    linear-gradient(145deg, #f2f8ee 0%, #ffffff 56%, #eef6ec 100%);
+}
+
+.auth-gate[hidden] {
+  display: none;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 430px;
+  min-width: 0;
+  justify-self: center;
+  padding: clamp(24px, 6vw, 38px);
+  border: 1px solid #d6e5d5;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 28px 80px rgba(6, 58, 32, 0.17);
+  text-align: center;
+}
+
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 24px;
+  color: var(--green-950);
+  text-align: left;
+}
+
+.auth-brand svg {
+  width: 44px;
+  height: 44px;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.auth-brand strong,
+.auth-brand small {
+  display: block;
+}
+
+.auth-brand strong {
+  font-size: 0.9rem;
+  letter-spacing: 0.035em;
+  line-height: 1.05;
+}
+
+.auth-brand small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.auth-badge {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 7px;
+  margin: 0 auto 14px;
+  padding: 7px 11px;
+  border: 1px solid #cce2cc;
+  border-radius: 999px;
+  color: var(--green-900);
+  background: var(--green-50);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.auth-badge svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.auth-card h1 {
+  margin: 0;
+  color: var(--green-950);
+  font-size: clamp(1.8rem, 8vw, 2.35rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.auth-card h1:focus {
+  outline: none;
+}
+
+.auth-message {
+  margin: 18px 0 0;
+  color: var(--green-950);
+  font-family: "Noto Nastaliq Urdu", "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+  font-size: 1.18rem;
+  font-weight: 700;
+  line-height: 1.85;
+}
+
+.auth-instruction {
+  margin: 11px auto 20px;
+  color: var(--muted);
+  font-size: 0.87rem;
+  line-height: 1.55;
+}
+
+.google-signin-button {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.auth-retry {
+  min-width: 140px;
+  min-height: 46px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--green-800);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.auth-retry:hover {
+  background: var(--green-900);
+}
+
+.auth-retry:focus-visible,
+.sign-out-button:focus-visible {
+  outline: 3px solid #f0b429;
+  outline-offset: 3px;
+}
+
+.auth-status {
+  min-height: 2.8em;
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.auth-status.is-error {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.auth-status.is-success {
+  color: var(--green-800);
+  font-weight: 700;
+}
+
+.auth-privacy {
+  margin: 12px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: #66716a;
+  font-size: 0.69rem;
+  line-height: 1.5;
+}
+
 button,
 select,
 input {
@@ -129,6 +320,78 @@ select {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.account-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-control[hidden] {
+  display: none;
+}
+
+.account-control__identity {
+  display: block;
+  max-width: 190px;
+  text-align: right;
+}
+
+.account-control__identity small,
+.account-control__identity strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-control__identity small {
+  color: var(--muted);
+  font-size: 0.62rem;
+  line-height: 1.1;
+}
+
+.account-control__identity strong {
+  margin-top: 2px;
+  color: var(--green-950);
+  font-size: 0.7rem;
+  line-height: 1.1;
+}
+
+.sign-out-button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border: 1px solid #cfdbcf;
+  border-radius: 999px;
+  color: var(--green-950);
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.sign-out-button:hover {
+  border-color: #a9c3ab;
+  background: var(--green-50);
+}
+
+.sign-out-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.sign-out-button svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
 }
 
 .contact-button {
@@ -827,6 +1090,7 @@ body.banner-ready .bulk-upload {
 
 .noscript-message {
   position: fixed;
+  z-index: 2000;
   right: 20px;
   bottom: 20px;
   left: 20px;
@@ -835,6 +1099,12 @@ body.banner-ready .bulk-upload {
   color: white;
   background: #822727;
   text-align: center;
+}
+
+@media (max-width: 1050px) {
+  .account-control__identity {
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
@@ -901,6 +1171,22 @@ body.banner-ready .bulk-upload {
 
   .header-actions {
     gap: 7px;
+  }
+
+  .sign-out-button {
+    width: 38px;
+    min-height: 38px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .sign-out-button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .contact-button {
@@ -1066,9 +1352,30 @@ body.banner-ready .bulk-upload {
   }
 }
 
+@media (max-width: 420px) {
+  .privacy-pill {
+    display: none;
+  }
+}
+
 @media (max-width: 350px) {
   .privacy-pill {
     display: none;
+  }
+
+  .contact-button {
+    width: 38px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .contact-button__copy {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .editor-card {

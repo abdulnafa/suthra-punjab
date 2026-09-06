@@ -15,9 +15,18 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 - All processing happens locally in the browser; photos are never uploaded
 - No framework, build command, package install or server is required
 
+## Private Google sign-in
+
+- Google Identity Services is configured with a Web OAuth client for the GitHub Pages origin.
+- Only the allowlisted Google account can unlock the banner maker through the normal interface.
+- Passwords and OTPs are handled by Google and are never received or stored by this website.
+- If the Google Auth app is in Testing, add the allowed account under **Audience → Test users**.
+- Never add an OAuth Client Secret to this static repository.
+- This client-side gate discourages ordinary unauthorized use, but GitHub Pages remains public and cannot provide server-enforced access control.
+
 ## Run locally
 
-Open `index.html` directly in a modern browser, or start any static file server in this folder.
+Google sign-in cannot be tested through a `file://` URL. Start a local static server in this folder instead.
 
 For example, if Python is installed:
 
@@ -26,6 +35,8 @@ python -m http.server 8000
 ```
 
 Then visit `http://localhost:8000`.
+
+To test Google sign-in locally, also add `http://localhost:8000` under the OAuth client's **Authorized JavaScript origins**. The deployed GitHub Pages site only needs `https://abdulnafa.github.io`.
 
 ## Publish on GitHub Pages
 

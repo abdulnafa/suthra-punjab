@@ -10,10 +10,49 @@
     <meta name="theme-color" content="#075b2a" />
     <title>Suthra Punjab Banner Maker</title>
     <!-- The version query prevents mobile browsers from mixing new HTML with stale CSS/JS. -->
-    <link rel="stylesheet" href="styles.css?v=20260904-2" />
-    <script src="app.js?v=20260904-2" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260906-1" />
+    <script src="auth.js?v=20260906-1" defer></script>
+    <script src="app.js?v=20260906-1" defer></script>
   </head>
-  <body>
+  <body class="auth-locked">
+    <div
+      id="authGate"
+      class="auth-gate"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="authTitle"
+      aria-describedby="authMessage authStatus"
+    >
+      <section class="auth-card">
+        <div class="auth-brand" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <path d="M9 31c1 15 12 25 26 25 10 0 18-5 23-12" />
+            <path d="M28 26C17 24 13 17 14 8c10 0 17 5 18 15" />
+            <path d="M34 22C34 11 41 5 52 5c0 11-6 18-18 20" />
+            <path d="M33 25c0 8-4 14-11 18" />
+          </svg>
+          <span><strong>SUTHRA PUNJAB</strong><small>Banner Maker</small></span>
+        </div>
+        <span class="auth-badge">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="10" width="14" height="10" rx="2" />
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+          </svg>
+          Private access
+        </span>
+        <h1 id="authTitle" tabindex="-1">Sign in to continue</h1>
+        <p id="authMessage" class="auth-message" lang="ur" dir="rtl">
+          یہ ویب سائٹ صرف شفاء اللہ ٹوانہ کے استعمال کے لیے ہے۔
+        </p>
+        <p class="auth-instruction">Use the authorized Google account to open the banner maker.</p>
+        <div id="googleSignInButton" class="google-signin-button" aria-label="Sign in with Google"></div>
+        <button id="authRetryButton" class="auth-retry" type="button" hidden>Try again</button>
+        <p id="authStatus" class="auth-status" role="status" aria-live="polite">Loading Google sign-in…</p>
+        <p class="auth-privacy">Google handles your password. This website never receives or stores it.</p>
+      </section>
+    </div>
+
+    <div id="protectedApp" hidden inert aria-hidden="true">
     <header class="site-header">
       <a class="brand" href="./" aria-label="Suthra Punjab Banner Maker home">
         <svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true">
@@ -51,6 +90,18 @@
             <strong>WhatsApp me</strong>
           </span>
         </a>
+        <div id="accountControl" class="account-control" hidden>
+          <span class="account-control__identity">
+            <small>Authorized user</small>
+            <strong id="signedInEmail"></strong>
+          </span>
+          <button id="signOutButton" class="sign-out-button" type="button" title="Sign out of the banner maker">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4M14 8l4 4-4 4M9 12h9" />
+            </svg>
+            <span>Sign out</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -324,6 +375,7 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
       </a>
     </footer>
+    </div>
 
     <noscript>
       <div class="noscript-message">Please enable JavaScript to create and download a banner.</div>
