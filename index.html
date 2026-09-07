@@ -10,9 +10,9 @@
     <meta name="theme-color" content="#075b2a" />
     <title>Suthra Punjab Banner Maker</title>
     <!-- The version query prevents mobile browsers from mixing new HTML with stale CSS/JS. -->
-    <link rel="stylesheet" href="styles.css?v=20260906-1" />
-    <script src="auth.js?v=20260906-1" defer></script>
-    <script src="app.js?v=20260906-1" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260907-1" />
+    <script src="auth.js?v=20260907-1" defer></script>
+    <script src="app.js?v=20260907-1" defer></script>
   </head>
   <body class="auth-locked">
     <div
@@ -42,8 +42,21 @@
         </span>
         <h1 id="authTitle" tabindex="-1">Sign in to continue</h1>
         <p id="authMessage" class="auth-message" lang="ur" dir="rtl">
-          یہ ویب سائٹ صرف شفاء اللہ ٹوانہ کے استعمال کے لیے ہے۔
+          اگر آپ یہ ویب سائٹ استعمال کرنا چاہتے ہیں تو براہِ کرم براہِ راست واٹس ایپ پر رابطہ کریں۔ شکریہ۔
         </p>
+        <a
+          class="auth-contact-link"
+          href="https://wa.me/923052501530?text=Hello%2C%20I%20would%20like%20access%20to%20the%20Suthra%20Punjab%20Banner%20Maker."
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Contact on WhatsApp to request access"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4A8 8 0 1 1 20 11.5Z" />
+            <path d="M8.3 8.1c.5 3.1 2.4 5 5.6 5.7M9 7.6 7.8 9.1m6.6 3.9-1.5 1.2" />
+          </svg>
+          Contact on WhatsApp
+        </a>
         <p class="auth-instruction">Use the authorized Google account to open the banner maker.</p>
         <div id="googleSignInButton" class="google-signin-button" aria-label="Sign in with Google"></div>
         <button id="authRetryButton" class="auth-retry" type="button" hidden>Try again</button>

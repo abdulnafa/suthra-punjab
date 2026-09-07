@@ -86,7 +86,7 @@
       const payload = decodeJwtPayload(response?.credential);
       if (!isAllowedCredential(payload)) {
         setAuthStatus(
-          "یہ گوگل اکاؤنٹ مجاز نہیں ہے۔ براہِ کرم شفاء اللہ ٹوانہ کے اکاؤنٹ سے سائن اِن کریں۔",
+          "یہ گوگل اکاؤنٹ مجاز نہیں ہے۔ رسائی کے لیے براہِ راست واٹس ایپ پر رابطہ کریں۔ شکریہ۔",
           "error",
           "ur",
         );

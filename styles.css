@@ -171,10 +171,49 @@ body.auth-locked {
 }
 
 .auth-instruction {
-  margin: 11px auto 20px;
+  margin: 13px auto 20px;
   color: var(--muted);
   font-size: 0.87rem;
   line-height: 1.55;
+}
+
+.auth-contact-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 17px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--green-800);
+  box-shadow: 0 8px 20px rgba(6, 83, 40, 0.18);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.auth-contact-link:hover {
+  background: var(--green-900);
+  box-shadow: 0 10px 24px rgba(6, 83, 40, 0.24);
+  transform: translateY(-1px);
+}
+
+.auth-contact-link:focus-visible {
+  outline: 3px solid #f0b429;
+  outline-offset: 3px;
+}
+
+.auth-contact-link svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
 }
 
 .google-signin-button {
