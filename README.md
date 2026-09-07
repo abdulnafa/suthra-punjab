@@ -22,6 +22,7 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 - Only the allowlisted Google account can unlock the banner maker through the normal interface.
 - Cloud Firestore keeps one short-lived active-browser lease. A second browser is rejected while the first browser is active.
 - The active browser renews its lease every 45 seconds. Signing out releases it immediately; otherwise it expires after 3 minutes without a heartbeat.
+- Every successful access session has a fixed 4-hour limit. At the limit, the app signs out, attempts to release the lease immediately and requires Google sign-in again; an offline lease expires automatically.
 - Heartbeats pause while the page is in the background. The app verifies the lease again before it becomes usable after returning.
 - If a visible browser cannot confirm its lease for 2.5 minutes, the app locks locally before the server lease expires.
 - Passwords and OTPs are handled by Google and are never received or stored by this website.

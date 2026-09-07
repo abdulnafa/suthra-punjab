@@ -25,6 +25,7 @@
   const HEARTBEAT_INTERVAL_MS = 45_000;
   const LOCAL_LEASE_GRACE_MS = 150_000;
   const WATCHDOG_INTERVAL_MS = 10_000;
+  const SESSION_DURATION_MS = 4 * 60 * 60 * 1_000;
   const FIREBASE_WRITE_TIMEOUT_MS = 15_000;
   const SIGN_OUT_RELEASE_TIMEOUT_MS = 5_000;
 
@@ -62,6 +63,8 @@
     signedInEmail: document.querySelector("#signedInEmail"),
     signOutButton: document.querySelector("#signOutButton"),
     sessionCheckOverlay: document.querySelector("#sessionCheckOverlay"),
+    sessionCheckTitle: document.querySelector("#sessionCheckTitle"),
+    sessionCheckDetail: document.querySelector("#sessionCheckDetail"),
   };
 
   let googleIdentityReady = false;
@@ -73,6 +76,7 @@
   let leaseWritePromise = null;
   let heartbeatTimer = null;
   let leaseWatchdogTimer = null;
+  let sessionExpiryTimer = null;
   let lastLeaseConfirmedAt = 0;
   let authenticationInProgress = false;
   let signOutInProgress = false;
@@ -214,7 +218,47 @@
     }
   }
 
+  function stopSessionExpiryTimer() {
+    if (sessionExpiryTimer !== null) {
+      window.clearTimeout(sessionExpiryTimer);
+      sessionExpiryTimer = null;
+    }
+  }
+
+  function isSessionExpired(session = leaseSession) {
+    return Boolean(session?.expiresAt) && Date.now() >= session.expiresAt;
+  }
+
+  function expireActiveSession() {
+    if (!leaseSession || signOutInProgress || document.hidden) return;
+    elements.sessionCheckTitle.textContent = "4-hour session complete";
+    elements.sessionCheckDetail.textContent = "Returning to Google sign-in…";
+    setSessionChecking(true);
+    void releaseLeaseAndSignOut();
+  }
+
+  function scheduleSessionExpiry() {
+    stopSessionExpiryTimer();
+    if (!leaseSession || signOutInProgress) return;
+
+    const remainingMs = leaseSession.expiresAt - Date.now();
+    if (remainingMs <= 0) {
+      expireActiveSession();
+      return;
+    }
+
+    sessionExpiryTimer = window.setTimeout(() => {
+      sessionExpiryTimer = null;
+      if (isSessionExpired()) expireActiveSession();
+      else scheduleSessionExpiry();
+    }, remainingMs);
+  }
+
   function setSessionChecking(isChecking) {
+    if (isChecking && !isSessionExpired()) {
+      elements.sessionCheckTitle.textContent = "Checking this device…";
+      elements.sessionCheckDetail.textContent = "Please keep your internet connection on.";
+    }
     elements.sessionCheckOverlay.hidden = !isChecking;
     elements.sessionCheckOverlay.setAttribute("aria-hidden", String(!isChecking));
     elements.protectedApp.toggleAttribute("inert", isChecking);
@@ -335,6 +379,7 @@
     leaseFailurePromise = (async () => {
       const denied = isPermissionDenied(error);
       stopHeartbeat();
+      stopSessionExpiryTimer();
       leaseSession = null;
 
       if (denied) {
@@ -360,6 +405,10 @@
 
   function renewLease({ failClosed = false } = {}) {
     if (!leaseSession || signOutInProgress) return Promise.resolve(false);
+    if (isSessionExpired()) {
+      expireActiveSession();
+      return Promise.resolve(false);
+    }
     if (leaseWritePromise) return leaseWritePromise;
 
     const session = leaseSession;
@@ -367,6 +416,10 @@
     trackedPromise = writeLease(session, true)
       .then(() => {
         if (leaseSession !== session || signOutInProgress) return false;
+        if (isSessionExpired(session)) {
+          expireActiveSession();
+          return false;
+        }
         lastLeaseConfirmedAt = Date.now();
         return true;
       })
@@ -393,9 +446,17 @@
   function startHeartbeat() {
     stopHeartbeat();
     if (!leaseSession || document.hidden || signOutInProgress) return;
+    if (isSessionExpired()) {
+      expireActiveSession();
+      return;
+    }
 
     heartbeatTimer = window.setInterval(() => {
-      if (!document.hidden) void renewLease();
+      if (isSessionExpired()) {
+        expireActiveSession();
+      } else if (!document.hidden) {
+        void renewLease();
+      }
     }, HEARTBEAT_INTERVAL_MS);
     leaseWatchdogTimer = window.setInterval(() => {
       if (
@@ -414,6 +475,10 @@
 
   function verifyLeaseOnResume() {
     if (!leaseSession || signOutInProgress || document.hidden) return Promise.resolve();
+    if (isSessionExpired()) {
+      expireActiveSession();
+      return Promise.resolve();
+    }
     if (resumeCheckPromise) return resumeCheckPromise;
 
     const session = leaseSession;
@@ -425,6 +490,10 @@
       const pendingWrite = leaseWritePromise;
       if (pendingWrite) await pendingWrite;
       if (leaseSession !== session || signOutInProgress || document.hidden) return;
+      if (isSessionExpired(session)) {
+        expireActiveSession();
+        return;
+      }
 
       const confirmed = await renewLease({ failClosed: true });
       if (
@@ -435,6 +504,7 @@
       ) {
         setSessionChecking(false);
         startHeartbeat();
+        scheduleSessionExpiry();
       }
     })()
       .catch((error) => {
@@ -508,7 +578,7 @@
 
       const ownerId = getOrCreateDeviceId();
       const reference = services.doc(services.db, LEASE_COLLECTION, LEASE_DOCUMENT);
-      const session = { reference, ownerId };
+      const session = { reference, ownerId, expiresAt: 0 };
 
       try {
         await writeLease(session, true);
@@ -524,11 +594,13 @@
         throw error;
       }
 
+      session.expiresAt = Date.now() + SESSION_DURATION_MS;
       leaseSession = session;
       lastLeaseConfirmedAt = Date.now();
       setAuthStatus("Access confirmed on this device.", "success");
       unlockApp(result.user);
       startHeartbeat();
+      scheduleSessionExpiry();
     } catch (error) {
       console.error("Private sign-in could not be completed.", error);
       await safeFirebaseSignOut();
@@ -622,6 +694,7 @@
     signOutInProgress = true;
     elements.signOutButton.disabled = true;
     stopHeartbeat();
+    stopSessionExpiryTimer();
 
     const session = leaseSession;
     leaseSession = null;
