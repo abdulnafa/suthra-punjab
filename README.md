@@ -18,11 +18,26 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 ## Private Google sign-in
 
 - Google Identity Services is configured with a Web OAuth client for the GitHub Pages origin.
+- The Google credential is exchanged with Firebase Authentication before access is granted.
 - Only the allowlisted Google account can unlock the banner maker through the normal interface.
+- Cloud Firestore keeps one short-lived active-browser lease. A second browser is rejected while the first browser is active.
+- The active browser renews its lease every 45 seconds. Signing out releases it immediately; otherwise it expires after 3 minutes without a heartbeat.
+- Heartbeats pause while the page is in the background. The app verifies the lease again before it becomes usable after returning.
+- If a visible browser cannot confirm its lease for 2.5 minutes, the app locks locally before the server lease expires.
 - Passwords and OTPs are handled by Google and are never received or stored by this website.
+- Firestore stores only a random browser ID, active/inactive state and server timestamp. Photos remain on the device and are never uploaded.
 - If the Google Auth app is in Testing, add the allowed account under **Audience → Test users**.
 - Never add an OAuth Client Secret to this static repository.
-- This client-side gate discourages ordinary unauthorized use, but GitHub Pages remains public and cannot provide server-enforced access control.
+- The browser lease coordinates normal use, but it is not a tamper-proof physical-device identifier. GitHub Pages remains public and cannot hide client-side source code.
+
+### Firebase console setup
+
+1. Register the web app in the existing `shutra-punjab` Firebase project.
+2. Under **Authentication → Sign-in method**, enable Google and disable unused providers.
+3. Under **Authentication → Settings → Authorized domains**, add `abdulnafa.github.io`.
+4. Create the default Cloud Firestore database in Production mode.
+5. Open Firestore's **Rules** tab, replace its contents with [`firestore.rules`](./firestore.rules), then publish the rules.
+6. Do not manually create the lease document; the first authorized sign-in creates it.
 
 ## Run locally
 
@@ -36,7 +51,7 @@ python -m http.server 8000
 
 Then visit `http://localhost:8000`.
 
-To test Google sign-in locally, also add `http://localhost:8000` under the OAuth client's **Authorized JavaScript origins**. The deployed GitHub Pages site only needs `https://abdulnafa.github.io`.
+To test Google sign-in locally, make sure `localhost` is listed under Firebase Authentication's **Authorized domains**, and add `http://localhost:8000` under the OAuth client's **Authorized JavaScript origins**. The deployed GitHub Pages site only needs `https://abdulnafa.github.io`.
 
 ## Publish on GitHub Pages
 

@@ -1,0 +1,59 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAllowedGoogleUser() {
+      return request.auth != null
+        && request.auth.token.email == "shafatiwana44@gmail.com"
+        && request.auth.token.email_verified == true
+        && request.auth.token.firebase.sign_in_provider == "google.com";
+    }
+
+    function isValidLeaseWrite() {
+      return request.resource.data.keys().hasAll([
+          "ownerId",
+          "active",
+          "heartbeatAt"
+        ])
+        && request.resource.data.keys().hasOnly([
+          "ownerId",
+          "active",
+          "heartbeatAt"
+        ])
+        && request.resource.data.ownerId is string
+        && request.resource.data.ownerId.size() >= 16
+        && request.resource.data.ownerId.size() <= 128
+        && request.resource.data.active is bool
+        && request.resource.data.heartbeatAt is timestamp
+        && request.resource.data.heartbeatAt == request.time;
+    }
+
+    match /activeBrowserLeases/bannerMaker {
+      allow get, list, delete: if false;
+
+      allow create: if isAllowedGoogleUser()
+        && isValidLeaseWrite()
+        && request.resource.data.active == true;
+
+      allow update: if isAllowedGoogleUser()
+        && isValidLeaseWrite()
+        && (
+          request.resource.data.ownerId == resource.data.ownerId
+          ||
+          (
+            request.resource.data.ownerId != resource.data.ownerId
+            && request.resource.data.active == true
+            && (
+              resource.data.active == false
+              || resource.data.heartbeatAt
+                   + duration.value(3, "m") <= request.time
+            )
+          )
+        );
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

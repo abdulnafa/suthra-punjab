@@ -10,9 +10,9 @@
     <meta name="theme-color" content="#075b2a" />
     <title>Suthra Punjab Banner Maker</title>
     <!-- The version query prevents mobile browsers from mixing new HTML with stale CSS/JS. -->
-    <link rel="stylesheet" href="styles.css?v=20260907-1" />
-    <script src="auth.js?v=20260907-1" defer></script>
-    <script src="app.js?v=20260907-1" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260907-3" />
+    <script src="auth.js?v=20260907-3" defer></script>
+    <script src="app.js?v=20260907-3" defer></script>
   </head>
   <body class="auth-locked">
     <div
@@ -57,12 +57,29 @@
           </svg>
           Contact on WhatsApp
         </a>
-        <p class="auth-instruction">Use the authorized Google account to open the banner maker.</p>
+        <p id="authInstruction" class="auth-instruction">
+          Use the authorized Google account to open the banner maker.
+        </p>
         <div id="googleSignInButton" class="google-signin-button" aria-label="Sign in with Google"></div>
         <button id="authRetryButton" class="auth-retry" type="button" hidden>Try again</button>
         <p id="authStatus" class="auth-status" role="status" aria-live="polite">Loading Google sign-in…</p>
         <p class="auth-privacy">Google handles your password. This website never receives or stores it.</p>
       </section>
+    </div>
+
+    <div
+      id="sessionCheckOverlay"
+      class="session-check-overlay"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      hidden
+    >
+      <div class="session-check-card">
+        <span class="session-check-spinner" aria-hidden="true"></span>
+        <strong>Checking this device…</strong>
+        <small>Please keep your internet connection on.</small>
+      </div>
     </div>
 
     <div id="protectedApp" hidden inert aria-hidden="true">
