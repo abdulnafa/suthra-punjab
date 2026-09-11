@@ -21,7 +21,7 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 
 - Google Identity Services is configured with a Web OAuth client for the GitHub Pages origin.
 - The Google credential is exchanged with Firebase Authentication before access is granted.
-- Only the allowlisted Google account can unlock the banner maker through the normal interface.
+- Only the two allowlisted Google accounts can unlock the banner maker through the normal interface.
 - Cloud Firestore keeps one short-lived active-browser lease. A second browser is rejected while the first browser is active.
 - The active browser renews its lease every 45 seconds. Signing out releases it immediately; otherwise it expires after 3 minutes without a heartbeat.
 - Every successful access session has a fixed 4-hour limit. At the limit, the app signs out, attempts to release the lease immediately and requires Google sign-in again; an offline lease expires automatically.
@@ -29,7 +29,7 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 - If a visible browser cannot confirm its lease for 2.5 minutes, the app locks locally before the server lease expires.
 - Passwords and OTPs are handled by Google and are never received or stored by this website.
 - Firestore stores only a random browser ID, active/inactive state and server timestamp. Photos remain on the device and are never uploaded.
-- If the Google Auth app is in Testing, add the allowed account under **Audience → Test users**.
+- If the Google Auth app is in Testing, add both allowed accounts under **Audience → Test users**.
 - Never add an OAuth Client Secret to this static repository.
 - The browser lease coordinates normal use, but it is not a tamper-proof physical-device identifier. GitHub Pages remains public and cannot hide client-side source code.
 

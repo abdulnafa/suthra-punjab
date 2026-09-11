@@ -3,7 +3,10 @@
 (() => {
   const AUTH_CONFIG = Object.freeze({
     clientId: "501721622823-oocufe77mi810v82kcgeeskg5b9d8rms.apps.googleusercontent.com",
-    allowedEmail: "shafatiwana44@gmail.com",
+    allowedEmails: Object.freeze([
+      "shafatiwana44@gmail.com",
+      "abdulnafa1122@gmail.com",
+    ]),
   });
 
   const FIREBASE_CONFIG = Object.freeze({
@@ -33,13 +36,13 @@
     title: "Sign in to continue",
     message:
       "اگر آپ یہ ویب سائٹ استعمال کرنا چاہتے ہیں تو براہِ کرم براہِ راست واٹس ایپ پر رابطہ کریں۔ شکریہ۔",
-    instruction: "Use the authorized Google account to open the banner maker.",
+    instruction: "Use an authorized Google account to open the banner maker.",
   });
 
   const DEVICE_CONFLICT_COPY = Object.freeze({
     title: "One device at a time",
     message:
-      "یہ اکاؤنٹ پہلے ہی کسی دوسرے موبائل پر استعمال ہو رہا ہے۔ ایک وقت میں صرف ایک ڈیوائس پر لاگ اِن کیا جا سکتا ہے۔",
+      "یہ ویب سائٹ پہلے ہی کسی دوسرے موبائل پر استعمال ہو رہی ہے۔ ایک وقت میں صرف ایک ڈیوائس پر لاگ اِن کیا جا سکتا ہے۔",
     instruction: "Sign out on the first device, or wait up to 3 minutes before trying again.",
   });
 
@@ -121,13 +124,17 @@
     return audience === AUTH_CONFIG.clientId;
   }
 
+  function isAllowedEmail(email) {
+    return AUTH_CONFIG.allowedEmails.includes(email);
+  }
+
   function isAllowedGoogleCredential(payload) {
     const now = Math.floor(Date.now() / 1000);
     const email = typeof payload.email === "string" ? payload.email.trim().toLowerCase() : "";
 
     return (
       Boolean(payload.sub) &&
-      email === AUTH_CONFIG.allowedEmail &&
+      isAllowedEmail(email) &&
       payload.email_verified === true &&
       audienceMatches(payload.aud) &&
       (!payload.azp || payload.azp === AUTH_CONFIG.clientId) &&
@@ -140,7 +147,7 @@
 
   function isAllowedFirebaseUser(user) {
     const email = typeof user?.email === "string" ? user.email.trim().toLowerCase() : "";
-    return Boolean(user?.uid) && email === AUTH_CONFIG.allowedEmail && user.emailVerified === true;
+    return Boolean(user?.uid) && isAllowedEmail(email) && user.emailVerified === true;
   }
 
   function createRandomDeviceId() {
@@ -273,7 +280,7 @@
   }
 
   function unlockApp(user) {
-    elements.signedInEmail.textContent = user.email || AUTH_CONFIG.allowedEmail;
+    elements.signedInEmail.textContent = user.email || "Authorized account";
     elements.accountControl.hidden = false;
     elements.protectedApp.hidden = false;
     elements.protectedApp.removeAttribute("inert");
@@ -679,7 +686,7 @@
       }
 
       renderGoogleButton();
-      setAuthStatus("Sign in with the authorized Google account to continue.");
+      setAuthStatus("Sign in with an authorized Google account to continue.");
     } catch (error) {
       googleIdentityReady = false;
       console.error("Private sign-in could not be loaded.", error);

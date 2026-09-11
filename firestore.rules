@@ -4,7 +4,10 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function isAllowedGoogleUser() {
       return request.auth != null
-        && request.auth.token.email == "shafatiwana44@gmail.com"
+        && (
+          request.auth.token.email == "shafatiwana44@gmail.com"
+          || request.auth.token.email == "abdulnafa1122@gmail.com"
+        )
         && request.auth.token.email_verified == true
         && request.auth.token.firebase.sign_in_provider == "google.com";
     }
