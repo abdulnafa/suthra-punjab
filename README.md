@@ -12,6 +12,8 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 - Live poster preview based on the supplied 535 × 725 reference layout
 - Reference-matched colors, unequal photo grid, typography and activity-specific vector icons
 - Sharp 1070 × 1450 JPG download
+- A DMAS verification popup before each download, using five or six numbers and all four operators
+- The verification queue starts at one correct answer; every wrong numeric answer adds one more required answer
 - All processing happens locally in the browser; photos are never uploaded
 - No framework, build command, package install or server is required
 

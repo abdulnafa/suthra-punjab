@@ -1077,6 +1077,257 @@ body.banner-ready .bulk-upload {
   box-shadow: none;
 }
 
+body.math-challenge-open {
+  overflow: hidden;
+}
+
+.math-challenge {
+  position: fixed;
+  z-index: 900;
+  inset: 0;
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+  background: rgba(5, 28, 16, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.math-challenge[hidden] {
+  display: none;
+}
+
+.math-challenge__card {
+  width: 100%;
+  max-width: 440px;
+  min-width: 0;
+  max-height: calc(100dvh - 24px);
+  justify-self: center;
+  overflow-y: auto;
+  padding: clamp(20px, 5vw, 30px);
+  border: 1px solid #cee0ce;
+  border-radius: 24px;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(199, 219, 168, 0.38), transparent 13rem),
+    var(--white);
+  box-shadow: 0 28px 80px rgba(0, 20, 9, 0.35);
+}
+
+.math-challenge__card:focus {
+  outline: none;
+}
+
+.math-challenge__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.math-challenge__badge,
+.math-challenge__progress {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.math-challenge__badge {
+  flex: 0 0 auto;
+  gap: 6px;
+  padding: 7px 10px;
+  color: var(--white);
+  background: var(--green-900);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.math-challenge__badge svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.math-challenge__progress {
+  justify-content: center;
+  padding: 7px 11px;
+  color: var(--green-950);
+  background: #eaf5e7;
+  text-align: center;
+}
+
+.math-challenge__card h2 {
+  margin: 21px 0 0;
+  color: var(--green-950);
+  font-size: clamp(1.55rem, 7vw, 2rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.math-challenge__help {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.math-challenge__calculation {
+  margin-top: 20px;
+  padding: 16px 14px;
+  border: 1px solid #d5e4d3;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #f5faf2, #ffffff);
+  text-align: center;
+}
+
+.math-challenge__calculation > span,
+.math-challenge__calculation > small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.67rem;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.math-challenge__expression {
+  margin: 10px 0;
+  color: var(--green-950);
+  font-size: clamp(1.2rem, 5.4vw, 1.75rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 850;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.math-challenge__spoken {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.math-challenge form {
+  margin-top: 18px;
+}
+
+.math-challenge form > label {
+  display: block;
+  margin-bottom: 7px;
+  color: #314138;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.math-challenge input {
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 2px solid #cbd8cd;
+  border-radius: 13px;
+  outline: 0;
+  color: var(--green-950);
+  background: var(--white);
+  font: inherit;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  text-align: center;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.math-challenge input:focus {
+  border-color: var(--green-700);
+  box-shadow: 0 0 0 4px rgba(15, 122, 60, 0.14);
+}
+
+.math-challenge input[aria-invalid="true"] {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 4px rgba(170, 46, 46, 0.11);
+}
+
+.math-challenge__feedback {
+  min-height: 2.9em;
+  margin: 9px 2px 0;
+  color: var(--green-800);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.math-challenge__feedback.is-error {
+  color: var(--danger);
+}
+
+.math-challenge__actions {
+  display: grid;
+  grid-template-columns: minmax(92px, 0.42fr) minmax(150px, 1fr);
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.math-challenge__actions button {
+  min-height: 52px;
+}
+
+.math-challenge__cancel {
+  padding: 10px 14px;
+  border: 1px solid #d3ddd4;
+  border-radius: 13px;
+  color: #566159;
+  background: var(--white);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.math-challenge__cancel:hover {
+  background: var(--green-50);
+}
+
+.math-challenge__cancel:focus-visible,
+.math-challenge input:focus-visible {
+  outline: 3px solid #56ad70;
+  outline-offset: 2px;
+}
+
+.math-challenge__card.is-wrong {
+  animation: math-challenge-shake 220ms ease-in-out;
+}
+
+@keyframes math-challenge-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  35% {
+    transform: translateX(-5px);
+  }
+
+  70% {
+    transform: translateX(5px);
+  }
+}
+
 .preview-card {
   position: sticky;
   top: 20px;
@@ -1225,6 +1476,38 @@ body.banner-ready .bulk-upload {
 @media (max-width: 560px) {
   body {
     transition: padding-bottom 180ms ease;
+  }
+
+  .math-challenge {
+    align-items: center;
+    padding:
+      max(10px, env(safe-area-inset-top))
+      max(10px, env(safe-area-inset-right))
+      max(10px, env(safe-area-inset-bottom))
+      max(10px, env(safe-area-inset-left));
+  }
+
+  .math-challenge__card {
+    max-height: calc(100dvh - 20px);
+    padding: 20px 17px;
+    border-radius: 20px;
+  }
+
+  .math-challenge__topline {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .math-challenge__progress {
+    flex: 1 1 150px;
+  }
+
+  .math-challenge__card h2 {
+    margin-top: 17px;
+  }
+
+  .math-challenge__calculation {
+    margin-top: 16px;
   }
 
   body.banner-ready {
@@ -1509,5 +1792,9 @@ body.banner-ready .bulk-upload {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .math-challenge__card.is-wrong {
+    animation: none;
   }
 }

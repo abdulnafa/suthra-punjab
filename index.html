@@ -10,9 +10,9 @@
     <meta name="theme-color" content="#075b2a" />
     <title>Suthra Punjab Banner Maker</title>
     <!-- The version query prevents mobile browsers from mixing new HTML with stale CSS/JS. -->
-    <link rel="stylesheet" href="styles.css?v=20260907-4" />
-    <script src="auth.js?v=20260907-4" defer></script>
-    <script src="app.js?v=20260907-4" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260911-1" />
+    <script src="auth.js?v=20260911-1" defer></script>
+    <script src="app.js?v=20260911-1" defer></script>
   </head>
   <body class="auth-locked">
     <div
@@ -405,6 +405,76 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
       </a>
     </footer>
+
+    <div id="mathChallengeOverlay" class="math-challenge" hidden aria-hidden="true">
+      <section
+        id="mathChallengeCard"
+        class="math-challenge__card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mathChallengeTitle"
+        aria-describedby="mathChallengeHelp mathChallengeProgress mathChallengeFeedback"
+        tabindex="-1"
+      >
+        <div class="math-challenge__topline">
+          <span class="math-challenge__badge">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />
+              <path d="M8 8h8M8 12h2m4 0h2M8 16h2m4 0h2" />
+            </svg>
+            DMAS check
+          </span>
+          <span id="mathChallengeProgress" class="math-challenge__progress">
+            1 correct answer required
+          </span>
+        </div>
+
+        <h2 id="mathChallengeTitle">Quick check before download</h2>
+        <p id="mathChallengeHelp" class="math-challenge__help">
+          Use DMAS: solve &times; and &divide; before + and &minus;. Each wrong answer adds one more question.
+        </p>
+
+        <div class="math-challenge__calculation">
+          <span>Calculate</span>
+          <p id="mathChallengeExpression" class="math-challenge__expression" dir="ltr" aria-hidden="true">&mdash;</p>
+          <span
+            id="mathChallengeSpokenExpression"
+            class="math-challenge__spoken"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          ></span>
+          <small>5&ndash;6 numbers &middot; whole-number answer</small>
+        </div>
+
+        <form id="mathChallengeForm" novalidate>
+          <label for="mathChallengeAnswer">Your answer</label>
+          <input
+            id="mathChallengeAnswer"
+            type="text"
+            inputmode="numeric"
+            enterkeyhint="done"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            maxlength="12"
+            aria-describedby="mathChallengeSpokenExpression mathChallengeFeedback"
+          />
+          <p
+            id="mathChallengeFeedback"
+            class="math-challenge__feedback"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          ></p>
+
+          <div class="math-challenge__actions">
+            <button id="mathChallengeCancel" class="math-challenge__cancel" type="button">Cancel</button>
+            <button id="mathChallengeSubmit" class="button button--primary" type="submit">Check answer</button>
+          </div>
+        </form>
+      </section>
+    </div>
     </div>
 
     <noscript>

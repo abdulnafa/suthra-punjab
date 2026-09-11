@@ -270,6 +270,18 @@ const PHOTO_CELLS = [
   { x: 211, y: 449, width: 172, height: 160, radius: 7 },
   { x: 384, y: 449, width: 150, height: 160, radius: 7 },
 ];
+const DMAS_DISPLAY_OPERATORS = Object.freeze({
+  "*": "\u00d7",
+  "/": "\u00f7",
+  "-": "\u2212",
+  "+": "+",
+});
+const DMAS_SPOKEN_OPERATORS = Object.freeze({
+  "*": "times",
+  "/": "divided by",
+  "-": "minus",
+  "+": "plus",
+});
 
 const elements = {
   ucSelect: document.querySelector("#ucSelect"),
@@ -284,13 +296,35 @@ const elements = {
   resetButton: document.querySelector("#resetButton"),
   downloadButton: document.querySelector("#downloadButton"),
   canvas: document.querySelector("#bannerCanvas"),
+  protectedApp: document.querySelector("#protectedApp"),
+  mathChallengeOverlay: document.querySelector("#mathChallengeOverlay"),
+  mathChallengeCard: document.querySelector("#mathChallengeCard"),
+  mathChallengeForm: document.querySelector("#mathChallengeForm"),
+  mathChallengeExpression: document.querySelector("#mathChallengeExpression"),
+  mathChallengeSpokenExpression: document.querySelector("#mathChallengeSpokenExpression"),
+  mathChallengeAnswer: document.querySelector("#mathChallengeAnswer"),
+  mathChallengeFeedback: document.querySelector("#mathChallengeFeedback"),
+  mathChallengeProgress: document.querySelector("#mathChallengeProgress"),
+  mathChallengeCancel: document.querySelector("#mathChallengeCancel"),
+  mathChallengeSubmit: document.querySelector("#mathChallengeSubmit"),
 };
 
 const context = elements.canvas.getContext("2d", { alpha: false });
 const photoLoadTokens = Array(6).fill(0);
+const mathChallengeBackground = [
+  document.querySelector("#protectedApp > .site-header"),
+  document.querySelector("#protectedApp > .page-shell"),
+  document.querySelector("#protectedApp > .site-footer"),
+].filter(Boolean);
 let renderQueued = false;
 let isExporting = false;
 let isBulkLoading = false;
+let isChallengeActive = false;
+let remainingCorrectAnswers = 1;
+let currentMathChallenge = null;
+let mathChallengePromise = null;
+let resolveMathChallenge = null;
+let mathChallengeReturnFocus = null;
 
 function setStatus(message = "", isError = false) {
   elements.statusMessage.textContent = message;
@@ -300,30 +334,33 @@ function setStatus(message = "", isError = false) {
 function updateInterface() {
   const detailsReady = Boolean(state.uc && state.activity);
   const uploadedCount = state.photos.filter(Boolean).length;
+  const interactionLocked = isExporting || isChallengeActive;
 
-  elements.ucSelect.disabled = isExporting;
-  elements.activitySelect.disabled = !state.uc || isExporting;
+  elements.ucSelect.disabled = interactionLocked;
+  elements.activitySelect.disabled = !state.uc || interactionLocked;
   elements.uploadSection.classList.toggle("is-disabled", !detailsReady);
   elements.photoProgress.textContent = `${uploadedCount} / 6`;
   elements.photoProgressTrack.setAttribute("aria-valuenow", String(uploadedCount));
   elements.photoProgressFill.style.width = `${(uploadedCount / 6) * 100}%`;
-  elements.bulkPhotos.disabled = !detailsReady || uploadedCount === 6 || isExporting || isBulkLoading;
+  elements.bulkPhotos.disabled = !detailsReady || uploadedCount === 6 || interactionLocked || isBulkLoading;
 
   elements.uploadCards.forEach((card) => {
     const input = card.querySelector("input[type='file']");
     const removeButton = card.querySelector(".remove-photo");
-    input.disabled = !detailsReady || isExporting || card.classList.contains("is-loading");
-    removeButton.disabled = isExporting;
+    input.disabled = !detailsReady || interactionLocked || card.classList.contains("is-loading");
+    removeButton.disabled = interactionLocked;
   });
 
   const complete = detailsReady && uploadedCount === 6;
-  elements.downloadButton.disabled = !complete || isExporting;
-  elements.resetButton.disabled = isExporting;
+  elements.downloadButton.disabled = !complete || interactionLocked;
+  elements.resetButton.disabled = interactionLocked;
   document.body.classList.toggle("details-ready", detailsReady);
   document.body.classList.toggle("banner-ready", complete);
 
   if (isExporting) {
     elements.downloadButton.textContent = "Preparing banner…";
+  } else if (isChallengeActive) {
+    elements.downloadButton.textContent = "Complete math check";
   } else if (complete) {
     elements.downloadButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 19h14"></path></svg>Download banner';
   } else if (detailsReady) {
@@ -541,7 +578,7 @@ function releasePhoto(photo) {
 }
 
 function removePhoto(index) {
-  if (isExporting) return;
+  if (isExporting || isChallengeActive) return;
   photoLoadTokens[index] += 1;
   releasePhoto(state.photos[index]);
   state.photos[index] = null;
@@ -557,8 +594,286 @@ function removePhoto(index) {
   updateInterface();
 }
 
+function randomIntInclusive(min, max) {
+  if (!Number.isInteger(min) || !Number.isInteger(max) || max < min) {
+    throw new TypeError("Invalid random integer range.");
+  }
+
+  const range = max - min + 1;
+  const cryptoApi = globalThis.crypto;
+
+  if (!cryptoApi?.getRandomValues) {
+    return min + Math.floor(Math.random() * range);
+  }
+
+  const uint32Size = 0x100000000;
+  const acceptanceLimit = uint32Size - (uint32Size % range);
+  const sample = new Uint32Array(1);
+
+  do {
+    cryptoApi.getRandomValues(sample);
+  } while (sample[0] >= acceptanceLimit);
+
+  return min + (sample[0] % range);
+}
+
+function evaluateDmasTokens(tokens) {
+  if (!Array.isArray(tokens) || tokens.length < 3 || tokens.length % 2 === 0) {
+    throw new TypeError("A valid alternating number/operator token array is required.");
+  }
+
+  const additiveTokens = [tokens[0]];
+
+  for (let index = 1; index < tokens.length; index += 2) {
+    const operator = tokens[index];
+    const right = tokens[index + 1];
+
+    if (!["+", "-", "*", "/"].includes(operator) || !Number.isSafeInteger(right)) {
+      throw new TypeError("The calculation contains an invalid value.");
+    }
+
+    if (operator === "*" || operator === "/") {
+      const left = additiveTokens.pop();
+
+      if (operator === "/" && (right === 0 || left % right !== 0)) {
+        throw new RangeError("Division must produce a whole number.");
+      }
+
+      additiveTokens.push(operator === "*" ? left * right : left / right);
+    } else {
+      additiveTokens.push(operator, right);
+    }
+  }
+
+  let result = additiveTokens[0];
+
+  for (let index = 1; index < additiveTokens.length; index += 2) {
+    result = additiveTokens[index] === "+"
+      ? result + additiveTokens[index + 1]
+      : result - additiveTokens[index + 1];
+  }
+
+  if (!Number.isSafeInteger(result)) {
+    throw new RangeError("The calculation result is not a safe whole number.");
+  }
+
+  return result;
+}
+
+function createMultiplicationTerm() {
+  const left = randomIntInclusive(2, 12);
+  const right = randomIntInclusive(2, 9);
+  return { tokens: [left, "*", right], value: left * right };
+}
+
+function createDivisionTerm() {
+  const divisor = randomIntInclusive(2, 9);
+  const quotient = randomIntInclusive(2, 12);
+  return { tokens: [divisor * quotient, "/", divisor], value: quotient };
+}
+
+function createSingleNumberTerm() {
+  const value = randomIntInclusive(2, 20);
+  return { tokens: [value], value };
+}
+
+function createDmasChallenge() {
+  const operandCount = randomIntInclusive(5, 6);
+  const terms = operandCount === 5
+    ? [createMultiplicationTerm(), createDivisionTerm(), createSingleNumberTerm()]
+    : [
+        createMultiplicationTerm(),
+        createDivisionTerm(),
+        randomIntInclusive(0, 1) === 0 ? createMultiplicationTerm() : createDivisionTerm(),
+      ];
+
+  terms.sort((left, right) => right.value - left.value);
+  const [largest, middle, smallest] = terms;
+  const subtractFirst = randomIntInclusive(0, 1) === 1;
+  const orderedTerms = subtractFirst
+    ? [largest, middle, smallest]
+    : [largest, smallest, middle];
+  const connectors = subtractFirst ? ["-", "+"] : ["+", "-"];
+  const tokens = [
+    ...orderedTerms[0].tokens,
+    connectors[0],
+    ...orderedTerms[1].tokens,
+    connectors[1],
+    ...orderedTerms[2].tokens,
+  ];
+  const answer = evaluateDmasTokens(tokens);
+
+  return {
+    answer,
+    operandCount,
+    tokens,
+    expression: tokens.map((token) => DMAS_DISPLAY_OPERATORS[token] ?? token).join(" "),
+  };
+}
+
+function requiredAnswersLabel(count) {
+  return `${count} correct answer${count === 1 ? "" : "s"} required`;
+}
+
+function setMathChallengeFeedback(message = "", isError = false) {
+  elements.mathChallengeFeedback.textContent = message;
+  elements.mathChallengeFeedback.classList.toggle("is-error", isError);
+}
+
+function showNextMathChallenge(message = "", isError = false) {
+  currentMathChallenge = createDmasChallenge();
+  elements.mathChallengeProgress.textContent = requiredAnswersLabel(remainingCorrectAnswers);
+  elements.mathChallengeExpression.textContent = `${currentMathChallenge.expression} = ?`;
+  elements.mathChallengeSpokenExpression.textContent = `New calculation: ${currentMathChallenge.tokens
+    .map((token) => DMAS_SPOKEN_OPERATORS[token] ?? token)
+    .join(" ")}. What is the answer?`;
+  elements.mathChallengeAnswer.value = "";
+  elements.mathChallengeAnswer.setAttribute("aria-invalid", "false");
+  setMathChallengeFeedback(message, isError);
+
+  window.requestAnimationFrame(() => {
+    if (isChallengeActive && !elements.protectedApp.hasAttribute("inert")) {
+      elements.mathChallengeAnswer.focus({ preventScroll: true });
+    }
+  });
+}
+
+function setMathChallengeBackgroundInert(isInert) {
+  mathChallengeBackground.forEach((element) => {
+    element.toggleAttribute("inert", isInert);
+  });
+}
+
+function closeMathChallenge(verified = false, restoreFocus = true) {
+  if (!mathChallengePromise) return;
+
+  const resolver = resolveMathChallenge;
+  const returnFocus = mathChallengeReturnFocus;
+  resolveMathChallenge = null;
+  mathChallengePromise = null;
+  mathChallengeReturnFocus = null;
+  currentMathChallenge = null;
+  isChallengeActive = false;
+
+  elements.mathChallengeOverlay.hidden = true;
+  elements.mathChallengeOverlay.setAttribute("aria-hidden", "true");
+  elements.mathChallengeAnswer.value = "";
+  elements.mathChallengeSpokenExpression.textContent = "";
+  elements.mathChallengeAnswer.setAttribute("aria-invalid", "false");
+  elements.mathChallengeCard.classList.remove("is-wrong");
+  setMathChallengeFeedback();
+  setMathChallengeBackgroundInert(false);
+  document.body.classList.remove("math-challenge-open");
+  updateInterface();
+  resolver?.(verified);
+
+  if (!verified && restoreFocus) {
+    window.requestAnimationFrame(() => {
+      if (returnFocus?.isConnected && !returnFocus.disabled) returnFocus.focus({ preventScroll: true });
+    });
+  }
+}
+
+function requestMathChallenge() {
+  if (mathChallengePromise) return mathChallengePromise;
+
+  if (remainingCorrectAnswers < 1) remainingCorrectAnswers = 1;
+  mathChallengeReturnFocus = document.activeElement;
+  isChallengeActive = true;
+  mathChallengePromise = new Promise((resolve) => {
+    resolveMathChallenge = resolve;
+  });
+
+  setMathChallengeBackgroundInert(true);
+  document.body.classList.add("math-challenge-open");
+  elements.mathChallengeOverlay.hidden = false;
+  elements.mathChallengeOverlay.removeAttribute("aria-hidden");
+  updateInterface();
+  showNextMathChallenge();
+  return mathChallengePromise;
+}
+
+function resetMathChallengeQueue() {
+  remainingCorrectAnswers = 1;
+}
+
+elements.mathChallengeForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!isChallengeActive || !currentMathChallenge) return;
+
+  const normalizedAnswer = elements.mathChallengeAnswer.value.replace(/[\s,]/g, "");
+
+  if (!/^-?\d+$/.test(normalizedAnswer) || !Number.isSafeInteger(Number(normalizedAnswer))) {
+    elements.mathChallengeAnswer.setAttribute("aria-invalid", "true");
+    setMathChallengeFeedback("Enter the answer using digits only.", true);
+    elements.mathChallengeAnswer.focus();
+    return;
+  }
+
+  if (Number(normalizedAnswer) !== currentMathChallenge.answer) {
+    remainingCorrectAnswers += 1;
+    elements.mathChallengeCard.classList.remove("is-wrong");
+    void elements.mathChallengeCard.offsetWidth;
+    elements.mathChallengeCard.classList.add("is-wrong");
+    window.setTimeout(() => elements.mathChallengeCard.classList.remove("is-wrong"), 240);
+    showNextMathChallenge(
+      `Incorrect. One extra question was added. ${requiredAnswersLabel(remainingCorrectAnswers)}.`,
+      true,
+    );
+    return;
+  }
+
+  remainingCorrectAnswers -= 1;
+
+  if (remainingCorrectAnswers === 0) {
+    closeMathChallenge(true, false);
+    return;
+  }
+
+  showNextMathChallenge(`Correct. ${requiredAnswersLabel(remainingCorrectAnswers)}.`);
+});
+
+elements.mathChallengeAnswer.addEventListener("input", () => {
+  elements.mathChallengeAnswer.setAttribute("aria-invalid", "false");
+});
+
+elements.mathChallengeCancel.addEventListener("click", () => closeMathChallenge(false));
+
+elements.mathChallengeOverlay.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeMathChallenge(false);
+    return;
+  }
+
+  if (event.key !== "Tab") return;
+  const focusable = [
+    elements.mathChallengeAnswer,
+    elements.mathChallengeCancel,
+    elements.mathChallengeSubmit,
+  ].filter((element) => !element.disabled);
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
+
+new MutationObserver(() => {
+  if (elements.protectedApp.hidden && isChallengeActive) {
+    closeMathChallenge(false, false);
+  } else if (isChallengeActive && !elements.protectedApp.hasAttribute("inert")) {
+    window.requestAnimationFrame(() => elements.mathChallengeAnswer.focus({ preventScroll: true }));
+  }
+}).observe(elements.protectedApp, { attributes: true, attributeFilter: ["hidden", "inert"] });
+
 elements.resetButton.addEventListener("click", () => {
-  if (isExporting) return;
+  if (isExporting || isChallengeActive) return;
   photoLoadTokens.forEach((_, index) => {
     photoLoadTokens[index] += 1;
   });
@@ -566,6 +881,7 @@ elements.resetButton.addEventListener("click", () => {
   state.uc = "";
   state.activity = "";
   state.photos = Array(6).fill(null);
+  resetMathChallengeQueue();
 
   elements.ucSelect.value = "";
   elements.activitySelect.value = "";
@@ -581,9 +897,16 @@ elements.resetButton.addEventListener("click", () => {
   elements.ucSelect.focus();
 });
 
-elements.downloadButton.addEventListener("click", async () => {
-  if (elements.downloadButton.disabled) return;
+function isBannerReady() {
+  return Boolean(state.uc && state.activity && state.photos.every(Boolean));
+}
 
+function hasActiveAppAccess() {
+  return !elements.protectedApp.hidden && !elements.protectedApp.hasAttribute("inert");
+}
+
+async function downloadBanner() {
+  if (!isBannerReady() || isExporting || !hasActiveAppAccess()) return;
   const exportUcLabel = UC_DATA[state.uc];
   const exportActivityLabel = ACTIVITY_DATA[state.activity].label;
   const exportFileName = `${slugify(exportUcLabel)}-${slugify(exportActivityLabel)}-banner.jpg`;
@@ -601,6 +924,10 @@ elements.downloadButton.addEventListener("click", async () => {
       );
     });
 
+    if (!hasActiveAppAccess()) {
+      throw new Error("The access session ended before the download started.");
+    }
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -617,7 +944,29 @@ elements.downloadButton.addEventListener("click", async () => {
     isExporting = false;
     updateInterface();
     if (outcome) setStatus(outcome[0], outcome[1]);
+    window.requestAnimationFrame(() => {
+      if (hasActiveAppAccess() && !elements.downloadButton.disabled) {
+        elements.downloadButton.focus({ preventScroll: true });
+      }
+    });
   }
+}
+
+elements.downloadButton.addEventListener("click", async () => {
+  if (elements.downloadButton.disabled || !isBannerReady()) return;
+
+  const verified = await requestMathChallenge();
+  if (!verified) return;
+
+  resetMathChallengeQueue();
+
+  if (!isBannerReady()) {
+    updateInterface();
+    setStatus("The banner changed before verification finished. Please check the six photos and try again.", true);
+    return;
+  }
+
+  await downloadBanner();
 });
 
 function slugify(value) {
