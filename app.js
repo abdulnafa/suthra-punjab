@@ -239,6 +239,18 @@ const ACTIVITY_DATA = {
     ],
     icons: ["public-place", "broom", "shield-check", "waste-bin", "team-five"],
   },
+  "post-rain-cleaning": {
+    label: "Post Rain Cleaning",
+    title: ["POST RAIN", "CLEANING"],
+    benefits: [
+      ["Post-Rain Cleanup", "Mud, silt and scattered waste are removed promptly after rainfall."],
+      ["Mud & Debris Removal", "Roads and public areas are cleared of mud, leaves and rain-borne debris."],
+      ["Clear Drains & Water Flow", "Drain openings and channels are cleared to help rainwater flow freely."],
+      ["Safer Public Areas", "Affected streets and shared spaces are restored for safer public access."],
+      ["Dedicated Sanitation Team", "Our sanitation staff responds after rain for a cleaner, safer community."],
+    ],
+    icons: ["post-rain", "clean-street", "drain-shovel", "shield-check", "team-five"],
+  },
 };
 
 const state = {
@@ -1716,6 +1728,23 @@ function drawBenefitIcon(type, x, y, size = 24) {
       context.stroke();
       break;
     }
+    case "post-rain": {
+      context.beginPath();
+      context.moveTo(-9, 1);
+      context.bezierCurveTo(-11, -3, -8, -6, -4, -6);
+      context.bezierCurveTo(-2, -11, 6, -10, 7, -5);
+      context.bezierCurveTo(11, -4, 12, 1, 9, 3);
+      context.lineTo(-7, 3);
+      context.bezierCurveTo(-10, 3, -11, 1, -9, 1);
+      context.stroke();
+      [-6, 0, 6].forEach((dropX) => {
+        context.beginPath();
+        context.moveTo(dropX, 6);
+        context.lineTo(dropX - 2, 10);
+        context.stroke();
+      });
+      break;
+    }
     case "water-flow": {
       context.beginPath();
       context.moveTo(0, -11);
@@ -1901,6 +1930,7 @@ function drawActivitySummaryIcon(activityKey, x, y, size) {
     "tehsil-entry-points-cleaning": "entry-gate",
     "milad-un-nabi-day-cleaning": "milad-cleaning",
     "public-place-cleaning": "public-place",
+    "post-rain-cleaning": "post-rain",
   };
   drawBenefitIcon(iconByActivity[activityKey] || "broom", x, y, size);
 }
