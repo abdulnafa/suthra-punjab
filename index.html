@@ -11,10 +11,11 @@
     <title>Suthra Punjab Banner Maker</title>
     <!-- The version query prevents mobile browsers from mixing new HTML with stale CSS/JS. -->
     <link rel="stylesheet" href="styles.css?v=20261019-2" />
-    <script src="auth.js?v=20260915-1" defer></script>
-    <script src="app.js?v=20261019-2" defer></script>
+    <!-- Public access: authentication is disabled; keep the script available for future use. -->
+    <!-- <script src="auth.js?v=20260915-1" defer></script> -->
+    <script src="app.js?v=20261019-3" defer></script>
   </head>
-  <body class="auth-locked downloads-paused">
+  <body>
     <div
       id="authGate"
       class="auth-gate"
@@ -22,6 +23,7 @@
       aria-modal="true"
       aria-labelledby="authTitle"
       aria-describedby="authMessage authStatus"
+      hidden
     >
       <section class="auth-card">
         <div class="auth-brand" aria-hidden="true">
@@ -82,7 +84,7 @@
       </div>
     </div>
 
-    <div id="protectedApp" hidden inert aria-hidden="true">
+    <div id="protectedApp">
     <header class="site-header">
       <a class="brand" href="./" aria-label="Suthra Punjab Banner Maker home">
         <svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true">

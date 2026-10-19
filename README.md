@@ -15,7 +15,13 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 - All processing happens locally in the browser; photos are never uploaded
 - No framework, build command, package install or server is required
 
-## Private Google sign-in
+## Public access
+
+The banner maker opens directly for everyone, with a clear preview and working JPG download. Google sign-in, account restrictions, the single-device lease and the 4-hour session limit are disabled. The page does not load `auth.js`, Google Identity Services or Firebase.
+
+The authentication code, hidden sign-in UI and Firestore rules are retained for future use. Existing Firestore rules do not need to be changed or made public.
+
+## Retained Google sign-in (currently disabled)
 
 - Google Identity Services is configured with a Web OAuth client for the GitHub Pages origin.
 - The Google credential is exchanged with Firebase Authentication before access is granted.
@@ -31,7 +37,7 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 - Never add an OAuth Client Secret to this static repository.
 - The browser lease coordinates normal use, but it is not a tamper-proof physical-device identifier. GitHub Pages remains public and cannot hide client-side source code.
 
-### Firebase console setup
+### Firebase console setup (only for private access)
 
 1. Register the web app in the existing `shutra-punjab` Firebase project.
 2. Under **Authentication → Sign-in method**, enable Google and disable unused providers.
@@ -42,7 +48,7 @@ A dependency-free, mobile-friendly static website that creates Suthra Punjab act
 
 ## Run locally
 
-Google sign-in cannot be tested through a `file://` URL. Start a local static server in this folder instead.
+For a local preview, start a static server in this folder. Public mode does not need Google or Firebase configuration.
 
 For example, if Python is installed:
 
@@ -52,7 +58,7 @@ python -m http.server 8000
 
 Then visit `http://localhost:8000`.
 
-To test Google sign-in locally, make sure `localhost` is listed under Firebase Authentication's **Authorized domains**, and add `http://localhost:8000` under the OAuth client's **Authorized JavaScript origins**. The deployed GitHub Pages site only needs `https://abdulnafa.github.io`.
+If private access is restored later, testing Google sign-in locally requires `localhost` in Firebase Authentication's **Authorized domains** and `http://localhost:8000` in the OAuth client's **Authorized JavaScript origins**. The deployed GitHub Pages site only needs `https://abdulnafa.github.io`.
 
 ## Publish on GitHub Pages
 

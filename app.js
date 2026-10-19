@@ -652,8 +652,7 @@ async function downloadBanner() {
 elements.downloadButton.addEventListener("click", () => {
   if (elements.downloadButton.disabled || !isBannerReady() || !hasActiveAppAccess()) return;
 
-  // Banner downloads are temporarily paused. Uncomment this call to restore them.
-  // void downloadBanner();
+  void downloadBanner();
 });
 
 function slugify(value) {
