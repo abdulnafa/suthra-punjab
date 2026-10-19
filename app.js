@@ -261,6 +261,7 @@ const state = {
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 const MAX_IMAGE_SIDE = 1200;
+const BANNER_DOWNLOADS_PAUSED = true;
 const SUPPORTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const LOGICAL_WIDTH = 535;
 const LOGICAL_HEIGHT = 725;
@@ -330,13 +331,15 @@ function updateInterface() {
   });
 
   const complete = detailsReady && uploadedCount === 6;
-  elements.downloadButton.disabled = !complete || interactionLocked;
+  elements.downloadButton.disabled = !complete || interactionLocked || BANNER_DOWNLOADS_PAUSED;
   elements.resetButton.disabled = interactionLocked;
   document.body.classList.toggle("details-ready", detailsReady);
   document.body.classList.toggle("banner-ready", complete);
 
   if (isExporting) {
     elements.downloadButton.textContent = "Preparing banner…";
+  } else if (complete && BANNER_DOWNLOADS_PAUSED) {
+    elements.downloadButton.textContent = "Download temporarily paused";
   } else if (complete) {
     elements.downloadButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 19h14"></path></svg>Download banner';
   } else if (detailsReady) {
@@ -350,6 +353,8 @@ function updateInterface() {
     setStatus(state.uc ? "Now select an activity to unlock photo uploads." : "Select a UC / MC to begin.");
   } else if (uploadedCount < 6) {
     setStatus(`${6 - uploadedCount} photo${6 - uploadedCount === 1 ? "" : "s"} remaining.`);
+  } else if (BANNER_DOWNLOADS_PAUSED) {
+    setStatus("Your banner is ready. Downloads are temporarily paused.");
   } else {
     setStatus("Your banner is ready. Preview it below or download now.");
   }
@@ -603,6 +608,11 @@ function hasActiveAppAccess() {
 }
 
 async function downloadBanner() {
+  if (BANNER_DOWNLOADS_PAUSED) {
+    setStatus("Banner downloads are temporarily paused.");
+    return;
+  }
+
   if (!isBannerReady() || isExporting || !hasActiveAppAccess()) return;
   const exportUcLabel = UC_DATA[state.uc];
   const exportActivityLabel = ACTIVITY_DATA[state.activity].label;
@@ -650,7 +660,7 @@ async function downloadBanner() {
 }
 
 elements.downloadButton.addEventListener("click", () => {
-  if (elements.downloadButton.disabled || !isBannerReady() || !hasActiveAppAccess()) return;
+  if (BANNER_DOWNLOADS_PAUSED || elements.downloadButton.disabled || !isBannerReady() || !hasActiveAppAccess()) return;
   void downloadBanner();
 });
 
